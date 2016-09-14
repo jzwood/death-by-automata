@@ -4,17 +4,28 @@
   "description": "\"my first socket.io app\"",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start":  "parallelshell 'node index.js' 'gulp'"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "~4.13.4",
-    "node-sass-middleware": "^0.9.8",
-    "socket.io": "^1.4.8",
-    "hbs": "~4.0.0",
     "body-parser": "~1.15.1",
-    "cookie-parser": "~1.4.3"
+    "cookie-parser": "~1.4.3",
+    "express": "~4.13.4",
+    "hbs": "~4.0.0",
+    "socket.io": "^1.4.8"
   },
-  "devDependencies": { }
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-clean-css": "^2.0.12",
+    "gulp-concat": "^2.6.0",
+    "gulp-es6-transpiler": "^1.0.1",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-imagemin": "^3.0.3",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-uglify": "^2.0.0",
+    "parallelshell": "^2.0.0"
+  }
 }
