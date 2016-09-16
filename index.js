@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
@@ -6,7 +8,6 @@ var express = require('express'),
     io = require('socket.io').listen(server),
     sockets = require(path.join(__dirname,'/backend/sockets.js')),
     hbs = require('hbs')
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -22,9 +23,8 @@ app.use('/', require('./routes/index'))
 app.use('/users', require('./routes/users'))
 app.use('/private', require('./routes/private'))
 
-sockets.networking(io,'hello')
-// sockets.networking(io,'yo')
-
+sockets.networking(io,'/public')
+sockets.networking(io,'/private')
 
 server.listen(app.get('port'), function(){
   console.log('listening on *:3000')

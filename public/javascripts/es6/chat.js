@@ -1,8 +1,6 @@
-// "use strict";
-
 var io,
-querystring = location.search.slice(1),
-socket = io('/'+querystring),
+isPrivate = location.href.indexOf('/private'),
+socket = isPrivate > 0 ? io('/private') : io('/public'),
 msgId = '7ydhidjf'
 
 document.addEventListener( "DOMContentLoaded",  function(){
@@ -21,7 +19,9 @@ function addFormListener(form, socket){
   form.addEventListener('submit',function(e){
     e.preventDefault();
     var m = document.querySelector('#m')
+
     socket.emit(msgId, m.value)
+
     appendMsg(m.value)
     m.value = ''
     return false
