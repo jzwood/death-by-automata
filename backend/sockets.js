@@ -2,12 +2,15 @@ var helpers = require('./helpers.js')
 
 function networking(io,namespace){
 
-  var nsp = io.of(namespace)
-  var msgId = '7ydhidjf' //arbitray
-  var roomKeys = {'default':'public'}
+  var nsp = io.of(namespace),
+      msg = {
+        input:      'auie4hf2we',
+        newroom:    '7yd3hi0djf',
+        disconnect: 'hd78dg23h1'
+      },
+      roomKeys = {'default':'public'}
 
   nsp.on('connection', function(socket){
-    // console.log(msgId,roomKeys,'OC')
     onConnect(socket,msgId,roomKeys);
 
     socket.on('disconnect', function(){
@@ -24,7 +27,7 @@ function networking(io,namespace){
 
 function onConnect(socket,msgId,roomKeys){
   helpers.joinDefault(socket,roomKeys)
-  socket.broadcast.to(roomKeys.default).emit(msgId, 'Please welcome: ' + helpers.print(socket.id))
+  socket.to(roomKeys.default).emit('init', { 'msg' : msg, 'socket' : socket })
 }
 
 function onDisconnect(socket,msgId,roomKeys){

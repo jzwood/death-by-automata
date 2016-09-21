@@ -1,24 +1,20 @@
-var io,
-isPrivate = location.href.indexOf('/private'),
-socket = isPrivate > 0 ? io('/private') : io('/public'),
-msgId = '7ydhidjf'
+"use strict";
+
+var io, msg
+let isPrivate = location.href.indexOf('/private'),
+socket = isPrivate > 0 ? io('/private') : io('/public')
 
 document.addEventListener( "DOMContentLoaded",  function(){
-
-  let form = document.querySelector('form')
-
-  addFormListener(form,socket)
-
-  socket.on(msgId, function(msg){
-    appendMsg(msg)
+  socket.on('init', function(keys){
+      if(!msg){ msg = keys.msg; }
+      initShip(keys.socket.id)
   })
-
 }, false )
 
 function addFormListener(form, socket){
   form.addEventListener('submit',function(e){
     e.preventDefault();
-    var m = document.querySelector('#m')
+    let m = document.querySelector('#m')
 
     socket.emit(msgId, m.value)
 
@@ -29,10 +25,10 @@ function addFormListener(form, socket){
 }
 
 function appendMsg(msg){
-  var temp = document.querySelector('.template').content
+  let temp = document.querySelector('.template').content
   temp.querySelector('li').textContent = msg
-  var clone = document.importNode(temp, true)
-  var messages = document.querySelector('#messages')
+  let clone = document.importNode(temp, true)
+  let messages = document.querySelector('#messages')
   messages.appendChild(clone)
   return false
 }

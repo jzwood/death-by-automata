@@ -1,44 +1,65 @@
 @import 'reset';
-@import 'typography';
+@import 'consts';
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font: 13px $font-1;
-}
-
-form {
-  background: #000;
-  padding: 3px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
-form input {
-  border: 0;
-  padding: 10px;
-  width: 90%;
-  margin-right: .5%;
-}
-
-form button {
-  width: 9%;
-  background: rgb(130, 224, 255);
-  border: none;
-  padding: 10px;
+html,body{
+  background: white;
+  width:100%;
+  max-width: 100%3;
+  min-height:100vh;
 }
 
 #messages {
   list-style-type: none;
   margin: 0;
   padding: 0;
+
+  li {
+    padding: 5px 10px;
+
+    &:nth-child(odd) {
+      background: #eee;
+    }
+
+  }
 }
 
-#messages li {
-  padding: 5px 10px;
+#messages li
+
+h1,h2,h3{
+  text-align: center;
+  font-weight: bold;
+  font-size: $large-font-weight;
+  padding: 20px 0 20px 0;
 }
 
-#messages li:nth-child(odd) {
-  background: #eee;
+input{
+  border-radius: $subtle-radius;
+  border: solid 1px black;
+}
+
+.form{
+  /*height: 18pt;*/
+  font-size: 18pt;
+  padding-left: 10px;
+}
+
+.input{
+  width:10ch;
+}
+
+.container{
+  text-align: center;
+}
+
+.sketch-container{
+  width:640px;
+  height:480px;
+  margin:0 auto;
+
+  border: black solid 2px;
+  border-radius: $subtle-radius;
+
+  canvas{
+    border-radius: $subtle-radius;
+  }
 }

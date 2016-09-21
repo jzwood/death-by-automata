@@ -16,7 +16,7 @@ var path = {
   'sass' : 'public/stylesheets/**/*.scss',
   'es6' : 'public/javascripts/es6/**/*.js',
 }, dest = {
-  'es6' : 'public/javascripts',
+  'build' : 'public/build',
 }
 
 // gulp.task('image-min', () =>
@@ -30,7 +30,8 @@ gulp.task('sass', function () {
   return gulp.src(path.sass)
     .pipe(sass().on('error', sass.logError))
     .pipe(rename({
-      dirname: "stylesheets",
+      dirname: "",
+      basename: "styles",
       extname: ".css"
     }))
     .pipe(autoprefixer({
@@ -38,7 +39,7 @@ gulp.task('sass', function () {
         cascade: false
     }))
     .pipe(cleanCSS())
-    .pipe(gulp.dest('public'))
+    .pipe(gulp.dest(dest.build))
 })
 
 // merges all js into one file & uglifies
@@ -47,7 +48,7 @@ gulp.task('es6', function() {
     .pipe(concat('main.js'))
     .pipe(es6transpiler())
     .pipe(uglify())
-    .pipe(gulp.dest(dest.es6))
+    .pipe(gulp.dest(dest.build))
 })
 
 gulp.task('watch', function() {
