@@ -1,34 +1,52 @@
 "use strict";
 
-var io, msg
-let isPrivate = location.href.indexOf('/private'),
-socket = isPrivate > 0 ? io('/private') : io('/public')
+var io, socket
+let isConnected = false, fleet = new Map()
 
 document.addEventListener( "DOMContentLoaded",  function(){
-  socket.on('init', function(keys){
-      if(!msg){ msg = keys.msg; }
-      initShip(keys.socket.id)
-  })
+  initShip("hello")
+
+  let isPrivate = location.href.indexOf('/private'),
+  socket = isPrivate > 0 ? io('/private') : io('/public')
+  socket.on('init', function(data){ onConnect(data); })
+
 }, false )
 
-function addFormListener(form, socket){
-  form.addEventListener('submit',function(e){
-    e.preventDefault();
-    let m = document.querySelector('#m')
-
-    socket.emit(msgId, m.value)
-
-    appendMsg(m.value)
-    m.value = ''
-    return false
-  }, false)
+function onConnect(data){
+  if(!isConnected){ initSocketListener(data.msg); isConnected = true; }
 }
 
-function appendMsg(msg){
-  let temp = document.querySelector('.template').content
-  temp.querySelector('li').textContent = msg
-  let clone = document.importNode(temp, true)
-  let messages = document.querySelector('#messages')
-  messages.appendChild(clone)
-  return false
+function initSocketListener(msg){
+  socket.on(msg.input, function(data){ onInput(data); })
+  socket.on(msg.newroom, function(data){ onNewRoom(data); })
 }
+
+function onInput(data){
+
+}
+
+function onNewRoom(data){
+
+}
+
+// function addFormListener(form, socket){
+//   form.addEventListener('submit',function(e){
+//     e.preventDefault();
+//     let m = document.querySelector('#m')
+//
+//     socket.emit(msgId, m.value)
+//
+//     appendMsg(m.value)
+//     m.value = ''
+//     return false
+//   }, false)
+// }
+
+// function appendMsg(msg){
+//   let temp = document.querySelector('.template').content
+//   temp.querySelector('li').textContent = msg
+//   let clone = document.importNode(temp, true)
+//   let messages = document.querySelector('#messages')
+//   messages.appendChild(clone)
+//   return false
+// }

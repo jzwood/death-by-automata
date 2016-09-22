@@ -1,20 +1,17 @@
 "use strict";
 
 //necessary globals
-let fleet, canvasWidth, canvasHeight,
-createCanvas, background, frameRate, fill, quad;
+let canvasWidth, canvasHeight,
+createCanvas, background, frameRate, fill, quad
 
+//P5 calls setup once as an initialization step
 function setup(){
-
-	canvasWidth = 640, canvasHeight = 480, 	fleet = []
-
-	let sketch =  createCanvas(canvasWidth, canvasHeight)
-  		.parent('sketch-container')
-
+	canvasWidth = 640, canvasHeight = 480,
+	let sketch =  createCanvas(canvasWidth, canvasHeight).parent('sketch-container')
 	frameRate(10)
-
 }
 
+//P5 loops draw() as mechanism of animation
 function draw() {
 	background('#ECEEFB')
 	for (let ship of fleet) {
@@ -22,20 +19,12 @@ function draw() {
 	}
 }
 
-//The algorithm below returns the positive mod value, cuz javascript doesn't do smart %
-let mod = function(val, base){
-			let temp = val%base
-			while (temp < 0){
-					temp += base
-			}
-			return temp
+function initShip(id){
+	let shipA = newShip(id,'#FF9E9E')
+	fleet.set(id, shipA)
 }
 
-function initShip(socket){
-	let shipA = newShip(socket.id,'#FF9E9E')
-	fleet.push(shipA)
-}
-
+//module pattern "ship" constructor
 function newShip(name,color) {
     let newShip = {'name':name},
         x = 100, y = 100, v = 2, r = Math.PI/3
