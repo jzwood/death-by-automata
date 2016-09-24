@@ -1,3 +1,10 @@
+function clean(id){
+  return id.slice(id.indexOf("#")+1)
+}
+
+function isEmpty(obj){
+  return Object.keys(obj).length
+}
 
 
 function joinRoomRequestHandler(socket,msg,roomKeys){
@@ -15,16 +22,8 @@ function joinRoomRequestHandler(socket,msg,roomKeys){
   return true
 }
 
-function joinDefault(socket,roomKeys){
-  roomKeys[socket.id] = roomKeys.default
-  socket.join(roomKeys.default)
-}
-
-function print(id){
-  return id.slice(id.indexOf("#")+1)
-}
 
 
 exports.joinRoomRequestHandler = joinRoomRequestHandler
-exports.joinDefault = joinDefault
-exports.print = print
+exports.clean = clean
+exports.isEmpty = isEmpty

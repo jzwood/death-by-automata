@@ -1,24 +1,29 @@
 "use strict";
 
-var io, socket
-let isConnected = false, fleet = new Map()
+var io,
+isConnected = false,
+socket = (function(){
+  var isPrivate = location.href.indexOf('/private')
+  return isPrivate > 0 ? io('/private') : io('/public')
+})()
 
-document.addEventListener( "DOMContentLoaded",  function(){
-  initShip("hello")
+socket.on('init', function(store){
+  if(!isConnected){
+    isConnected = true
+    initSocketListener(store.ids)
+  }
+  syncUsers(store)
+})
 
-  let isPrivate = location.href.indexOf('/private'),
-  socket = isPrivate > 0 ? io('/private') : io('/public')
-  socket.on('init', function(data){ onConnect(data); })
-
-}, false )
-
-function onConnect(data){
-  if(!isConnected){ initSocketListener(data.msg); isConnected = true; }
+// Should only be called once
+function initSocketListener(ids){
+  socket.on(ids.userInput, function(data){  })
+  socket.on(ids.newRoom, function(data){  })
+  socket.on(ids.disconnect, function(data){  })
 }
 
-function initSocketListener(msg){
-  socket.on(msg.input, function(data){ onInput(data); })
-  socket.on(msg.newroom, function(data){ onNewRoom(data); })
+function onConnect(data){
+
 }
 
 function onInput(data){

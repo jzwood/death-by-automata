@@ -2,11 +2,12 @@
 
 //necessary globals
 let canvasWidth, canvasHeight,
-createCanvas, background, frameRate, fill, quad
+createCanvas, background, frameRate,
+fill, quad, fleet = new Map()
 
 //P5 calls setup once as an initialization step
 function setup(){
-	canvasWidth = 640, canvasHeight = 480,
+	canvasWidth = 640, canvasHeight = 480
 	let sketch =  createCanvas(canvasWidth, canvasHeight).parent('sketch-container')
 	frameRate(10)
 }
@@ -14,9 +15,13 @@ function setup(){
 //P5 loops draw() as mechanism of animation
 function draw() {
 	background('#ECEEFB')
-	for (let ship of fleet) {
+	for (let [shipid, ship] of fleet) {
 		ship.update()
 	}
+}
+
+function syncUsers(store){
+	
 }
 
 function initShip(id){
