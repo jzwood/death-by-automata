@@ -6,7 +6,7 @@ var express = require('express'),
     path = require('path'),
     // favicon = require('serve-favicon'),
     io = require('socket.io').listen(server),
-    sockets = require(path.join(__dirname,'/backend/sockets.js')),
+    sockets = require(path.join(__dirname,'/backend/socket-server.js')),
     hbs = require('hbs')
 
 // view engine setup

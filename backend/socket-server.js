@@ -1,93 +1,64 @@
 var helper = require('./helpers.js')
 
+function clean(id){
+  return (id.slice(id.indexOf("#")+1)).toString()
+}
+
 function networking(io, namespace) {
 
   var nsp = io.of(namespace),
   store = {
     ids: {
-      userInput: 'auie4hf2we',
-      newRoom: '7yd3hi0djf'
+      userInput:  'auie4hf2we',
+      newRoom:    '7yd3hi0djf',
+      disconnect: '6tddjsuwiw',
+      update:     'su2j8d1din1'
     },
-    map : new Map(),
-    roomMap = new Map([
-      ['public', {}]
-    ])
+    map : {}
   }
 
   nsp.on('connection', function(socket) {
-
-    // Initialization
     onConnect(nsp, socket, store)
-
-    socket.on('disconnect', function() {
-      onDisconnect(socket,store)
-    })
-
-    // socket.on(store.userInput, function(data){
-    //
-    // })
-
-    // socket.on(ref.msg.newroom, function(msg){
-    //   onNewRoom(socket,ref,msg)
-    // })
+    onDisconnect(socket,store)
+    onUserSync(socket,store)
+    // onNewRoom(socket,store)
   })
 
 }
 
 function onConnect(nsp, socket, store){
+  //when you first connect you need to know every user's state for your local initialization
   socket.join('public')
-  store.map.set(helper.clean(socket.id),{
+  store.map[clean(socket.id)] = {
     room: 'public',
     x: 100,
     y: 100,
-    r: Math.PI / 3
+    r: Math.random()*2*Math.PI
+  }
+  nsp.to('public').emit('init', store)
+}
+
+function onUserSync(socket,store){
+  socket.on(store.ids.update, function(props){
+    var userData = store.map[clean(socket.id)]
+    userData.x = props.x
+    userData.y = props.y
+    userData.r = props.r
   })
-  nsp.to('public').emit('init', store)
 }
 
-function onDisconnect(socket,store) {
-  var cleanId = helper.clean(socket.id),
-  map = store.roomMap
-  for (var [roomName, roomUsers] of map) {
-    if(roomUsers[cleanId]){
-      delete roomUsers[cleanId]
-      socket.broadcast.to(roomName).emit(store.ids.disconnect, cleanId)
-      if(helper.isEmpty(roomUsers)){
-        map.delete(roomName)
-      } break
+function onDisconnect(socket,store){
+  socket.on('disconnect', function() {
+    // the user will be removed from room automatically.
+    // This function simply removes user's server side data
+    var cleanId = clean(socket.id),
+    usermap = store.map
+    if(usermap[cleanId]){
+      var room = usermap[cleanId].room
+      socket.broadcast.to(room).emit(store.ids.disconnect, cleanId)
+      delete usermap[cleanId]
     }
-  }
-}
-
-function onConnect_old(nsp, socket, store){
-  socket.join('public')
-  var publicRoomUsers = store.roomMap.get('public')
-  publicRoomUsers[helper.clean(socket.id)] = {
-    x: 100,
-    y: 100,
-    r: Math.PI / 3
-  }
-  nsp.to('public').emit('init', store)
-}
-
-function onDisconnect(socket,store) {
-  var cleanId = helper.clean(socket.id),
-  map = store.roomMap
-  for (var [roomName, roomUsers] of map) {
-    if(roomUsers[cleanId]){
-      delete roomUsers[cleanId]
-      socket.broadcast.to(roomName).emit(store.ids.disconnect, cleanId)
-      if(helper.isEmpty(roomUsers)){
-        map.delete(roomName)
-      } break
-    }
-  }
-}
-
-function onInput(socket, msg, roomKeys) {
-  roomName = helper.getRoom(store,cleanId),
-  users = store.roomMap.get(roomName)
-  // socket.broadcast.to(roomKeys[socket.id]).emit(msgId, msg)
+  })
 }
 
 function onNewRoom(socket, msg, roomKeys) {

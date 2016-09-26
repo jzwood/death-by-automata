@@ -4,7 +4,7 @@
   "description": "\"my first socket.io app\"",
   "main": "index.js",
   "scripts": {
-    "start":  "parallelshell 'node index.js' 'gulp'"
+    "start":  "parallelshell 'gulp' 'node index.js'"
   },
   "author": "",
   "license": "MIT",
