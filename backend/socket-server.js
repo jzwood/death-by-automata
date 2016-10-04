@@ -1,5 +1,3 @@
-var helper = require('./helpers.js')
-
 function clean(id){
   return (id.slice(id.indexOf("#")+1)).toString()
 }
@@ -10,32 +8,33 @@ function networking(io, namespace) {
   store = {
     ids: {
       userInput:  'auie4hf2we',
-      newRoom:    '7yd3hi0djf',
       disconnect: '6tddjsuwiw',
-      update:     'su2j8d1din1'
+      update:     'su2j8d1di1'
     },
     map : {}
   }
 
   nsp.on('connection', function(socket) {
-    onConnect(nsp, socket, store)
-    onDisconnect(socket,store)
-    onUserSync(socket,store)
-    // onNewRoom(socket,store)
+    socket.on('init',function(room){
+      onConnect(nsp, socket, store, room)
+      onDisconnect(socket,store)
+      onUserSync(socket,store)
+    })
   })
-
 }
 
-function onConnect(nsp, socket, store){
+function onConnect(nsp, socket, store, roomId){
   //when you first connect you need to know every user's state for your local initialization
-  socket.join('public')
+  roomId = String(roomId.slice(-40));//String(Math.random())//
+  socket.join(roomId)
   store.map[clean(socket.id)] = {
-    room: 'public',
+    room: roomId,
     x: 100,
     y: 100,
     r: Math.random()*2*Math.PI
   }
-  nsp.to('public').emit('init', store)
+  nsp.to(roomId).emit('sync', store)
+  console.log(store)
 }
 
 function onUserSync(socket,store){
@@ -43,7 +42,10 @@ function onUserSync(socket,store){
     var userData = store.map[clean(socket.id)]
     userData.x = props.x
     userData.y = props.y
-    userData.r = props.r
+    if(userData.r !== props.r){
+      userData.r = props.r
+      socket.broadcast.to(userData.room).emit('sync',store)
+    }
   })
 }
 
@@ -59,10 +61,6 @@ function onDisconnect(socket,store){
       delete usermap[cleanId]
     }
   })
-}
-
-function onNewRoom(socket, msg, roomKeys) {
-  // socket.broadcast.to(roomKeys[socket.id]).emit(msgId, msg)
 }
 
 exports.networking = networking;

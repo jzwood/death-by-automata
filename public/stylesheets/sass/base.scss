@@ -8,23 +8,6 @@ html,body{
   min-height:100vh;
 }
 
-#messages {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-
-  li {
-    padding: 5px 10px;
-
-    &:nth-child(odd) {
-      background: #eee;
-    }
-
-  }
-}
-
-#messages li
-
 h1,h2,h3{
   text-align: center;
   font-weight: bold;
@@ -37,14 +20,26 @@ input{
   border: solid 1px black;
 }
 
-.form{
-  /*height: 18pt;*/
-  font-size: 18pt;
-  padding-left: 10px;
-}
+.forms {
 
-.input{
-  width:10ch;
+  margin:0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // justify-content: center;
+  .button{
+    width: 242px;
+  }
+  .input{
+    height:31px;
+    width:10ch;
+  }
+
+  .field{
+    display: inline;
+    font-size: 18pt;
+    padding-left: 6px;
+  }
 }
 
 .container{
