@@ -6,33 +6,33 @@ let socket = (function(){
   return isPrivate > 0 ? io('/private') : io('/public')
 })()
 
-socket.emit('init',window.location.pathname)
+//hopefully alerts the server which room socket should join
+socket.emit('init',window.location.pathname.slice(-40))
 
-socket.on('sync', function(store){
-  const map = store.map,
-  allkeys = Object.keys(map)
-  for (const key of allkeys) {
-    if(local.fleet.has(key)){
-      updateShip(key,map[key])
-    }else{
-      initShip(key,map[key])
-    }
+socket.on('sync', function(users){
+  const roomUsers = Object.keys(users)
+  for (const key of roomUsers) {
+    local.fleet.has(key) ? updateShip(key,users[key]) : initShip(key,users[key])
   }
-  initSocketListener(store.ids)
+})
+
+socket.on('removeUser', function(userId){
+  console.log('deleted',userId,'from client map')
+  local.fleet.delete(userId)
 })
 
 // Should only be called once
-function initSocketListener(ids){
-  local.me = socket.id
-  console.log('initSocketListener')
-  initSocketListener = Function("") //prevents initSocketListener from being used more than once
-  socket.on(ids.disconnect, function(userId){
-    console.log('deleted',userId,'from client map')
-    local.fleet.delete(userId)
-  })
-
+function pingServer(ids){
+  pingServer = Function("") //prevents initSocketListener from being used more than once
   var updateServer = window.setInterval(function(){
-    socket.emit(ids.update, local.fleet.get(socket.id).getProps())
+    if(local.fleet.get(socket.id)){
+      socket.emit('updateUser', local.fleet.get(socket.id).getProps())
+    }
   }, 100)
-
 }
+
+
+// start pinging server
+(function(socket){
+  pingServer()
+})()

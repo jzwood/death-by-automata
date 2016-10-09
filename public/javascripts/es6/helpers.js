@@ -16,9 +16,9 @@ document.addEventListener('keydown', (event) => {
 		local.isUp = false
 	  const keyName = event.key;
 	  if(keyName === 'ArrowLeft'){
-			local.fleet.get(local.me).rotate(-10,true)
+			local.fleet.get(socket.id).rotate(-10,true)
 		}else if( keyName === 'ArrowRight'){
-			local.fleet.get(local.me).rotate(10,true)
+			local.fleet.get(socket.id).rotate(10,true)
 		}
 	}
 }, false)
