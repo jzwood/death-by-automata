@@ -17,7 +17,7 @@ function setup(){
 
 //P5 loops draw() as mechanism of animation
 function draw() {
-	background('#ECEEFB')
+	background('#ffffff')
 	for (let ship of local.fleet.values()) {
 		ship.update()
 	}

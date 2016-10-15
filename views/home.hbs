@@ -1,8 +1,11 @@
 <h1>Headline</h1>
-<div class="forms">
-  {{> publicform }}
-  <br>
+<div class="nav">
+  <a class="btn" href="/public">Public Arena</a>
+</div>
+<div class="nav">
   {{> privateform }}
+</div>
+<div class="nav">
   {{#if errorMsg}}
     <h3>{{errorMsg}}</h3>
   {{/if}}

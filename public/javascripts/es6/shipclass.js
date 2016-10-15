@@ -18,7 +18,7 @@ function newShip(name,color) {
         x = 0, y = 0, v = 2, r = 0
 		const scale = 15
 
-		let drawSelf = function(){
+		let drawSelf = () => {
 	    fill(color)
 
 	    const wingAngle = Math.PI*3/4
@@ -29,22 +29,22 @@ function newShip(name,color) {
 		    x+scale*Math.cos(r+wingAngle), y+scale*Math.sin(r+wingAngle))
 	  }
 
-		newShip.rotate = function(angle,isDeg=false){
+		newShip.rotate = (angle,isDeg=false) => {
 			if(isDeg){
 				angle *= Math.PI / 180
 			}
 			r += angle
 		}
 
-		newShip.getProps = function(){
+		newShip.getProps = () => {
 			return {'x':x,'y':y,'r':r}
 		}
 
-		newShip.setProps = function(data) {
+		newShip.setProps = data => {
 			x = data.x; y = data.y; r = data.r
 		}
 
-		newShip.update = function(){
+		newShip.update = () => {
 				x = mod(x + v * Math.cos(r), canvasWidth)
 		    y = mod(y + v * Math.sin(r), canvasHeight)
 		    drawSelf()

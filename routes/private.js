@@ -16,7 +16,7 @@ router.post('/', function(req, res, next) {
 })
 
 router.get('/:id([a-z0-9]{40})', function(req, res, next) {
-  return res.render('main', { title: req.query.room, room: req.params.id });
+  return res.render('main', { title: 'Private Room', room: req.params.id });
 })
 
 router.get('/', function(req, res, next) {

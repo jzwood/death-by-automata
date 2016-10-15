@@ -4,13 +4,13 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('home', {
-    title: 'Public Chat'
+    title: 'Home'
   });
 });
 
 router.get('/errorMessage', function(req, res, next) {
   res.render('home', {
-    title: 'Public Chat',
+    title: 'Home',
     errorMsg: 'No Spaces'
   });
 });

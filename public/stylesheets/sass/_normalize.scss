@@ -1,0 +1,21 @@
+body,
+html {
+  background: white;
+  width: 100%;
+  max-width: 100%3;
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: Arial;
+  text-align: center;
+  font-weight: bold;
+  font-size: $large-font-weight;
+  padding: 20px 0;
+}
+
+a {
+  text-decoration: none;
+  outline: 0;
+  color: black;
+}
