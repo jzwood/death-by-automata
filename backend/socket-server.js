@@ -32,7 +32,8 @@ function onConnect(nsp, socket, cache, roomId){
     room: roomId,
     x: 100,
     y: 100,
-    r: Math.random() * 2 * Math.PI
+    vx: 0,
+    vy: 0
   }
 
   socket.join(roomId)
@@ -47,10 +48,11 @@ function onUserSync(socket,cache){
     if(userRoom && cache[userRoom][cleanId]){
       try{
         var user = cache[userRoom][cleanId]
-        user.x = props.x
-        user.y = props.y
-        if(user.r !== props.r){
-          user.r = props.r
+        if(user.x !== props.x || user.y !== props.y){
+          user.x = props.x
+          user.y = props.y
+          user.vx = props.vx
+          user.vy = props.vy
           socket.broadcast.to(userRoom).emit('sync',cache[userRoom])
         }
       }catch(e){

@@ -18,7 +18,7 @@ function setup() {
   renderer = autoDetectRenderer(800, 600, {
     antialiasing: false,
     transparent: false,
-    backgroundColor: 0xff0000,
+    backgroundColor: 0x1099bb,
     resolution: 1
   })
 

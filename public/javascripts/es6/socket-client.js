@@ -12,21 +12,29 @@ socket.emit('init',window.location.pathname.slice(-40))
 socket.on('sync', users => {
   const roomUsers = Object.keys(users)
   for (const key of roomUsers) {
-    local.clubHouse.has(key) ? updateMember(key,users[key]) : initMember(key,users[key])
+    local.clubHouse.getMap().has(key) ? updateMember(key,users[key]) : initMember(key,users[key])
   }
 })
 
 socket.on('removeUser', userId => {
   console.log('deleted',userId,'from client map')
-  local.clubHouse.delete(userId)
+  let map = local.clubHouse.getMap()
+  if (map.has(userId)){
+    stage.removeChild(map.get(userId).graphics)
+    map.delete(userId)
+
+  }else{
+    console.log("Deleting non-existent user:",userId)
+  }
+
 })
 
 // Should only be called once
 function pingServer(ids){
   pingServer = Function("") //prevents initSocketListener from being used more than once
   var updateServer = window.setInterval( () => {
-    if(local.clubHouse.get(socket.id)){
-      socket.emit('updateUser', local.clubHouse.get(socket.id).getProps())
+    if(local.clubHouse.getMap().get(socket.id)){
+      socket.emit('updateUser', local.clubHouse.getMap().get(socket.id).getProps())
     }
   }, 100)
 }
