@@ -1,24 +1,36 @@
 "use strict";
 
-//necessary evils I mean globals (p5)
-let canvasWidth, canvasHeight,
-createCanvas, background, frameRate,
-fill, quad
-//local "globals" will populate this
+let PIXI, Container, autoDetectRenderer, stage, renderer, loader
+
+//local "globals" will populate this POJO
 let local
 
-//P5 calls setup once as an initialization step
-function setup(){
-	canvasWidth = 640, canvasHeight = 480
-	let sketch =  createCanvas(canvasWidth, canvasHeight).parent('sketch-container')
-	frameRate(10)
-	local = {fleet: new Map(), isUp: false}
+document.addEventListener("DOMContentLoaded", function(event) {
+  console.log("DOM fully loaded and parsed")
+  setup()
+})
+
+function setup() {
+  //Aliases
+  Container = PIXI.Container,
+  autoDetectRenderer = PIXI.autoDetectRenderer,
+  stage = new Container(),
+  renderer = autoDetectRenderer(800, 600, {
+    antialiasing: false,
+    transparent: false,
+    backgroundColor: 0xff0000,
+    resolution: 1
+  })
+
+  document.body.appendChild(renderer.view)
+  local = {
+    clubHouse: newClubHouse()
+  }
+  draw()
 }
 
-//P5 loops draw() as mechanism of animation
 function draw() {
-	background('#ffffff')
-	for (let ship of local.fleet.values()) {
-		ship.update()
-	}
+  requestAnimationFrame(draw)
+  local.clubHouse.update()
+  renderer.render(stage)
 }

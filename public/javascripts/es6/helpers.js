@@ -7,18 +7,38 @@ function mod(val, base){
 			return temp
 }
 
-document.addEventListener('keyup', (event) => {
- local.isUp = true
-}, false)
-
-document.addEventListener('keydown', (event) => {
-	if(local.isUp){
-		local.isUp = false
-	  const keyName = event.key;
-	  if(keyName === 'ArrowLeft'){
-			local.fleet.get(socket.id).rotate(-10,true)
-		}else if( keyName === 'ArrowRight'){
-			local.fleet.get(socket.id).rotate(10,true)
-		}
-	}
-}, false)
+//The `keyboard` helper function
+function keyboard(keyCode) {
+  var key = {}
+  key.code = keyCode
+  key.isDown = false
+  key.isUp = true
+  key.press = undefined
+  key.release = undefined
+  //The `downHandler`
+  key.downHandler = (event) => {
+    if (event.keyCode === key.code) {
+      if (key.isUp && key.press) key.press()
+      key.isDown = true
+      key.isUp = false
+    }
+    event.preventDefault()
+  }
+  //The `upHandler`
+  key.upHandler = (event) => {
+    if (event.keyCode === key.code) {
+      if (key.isDown && key.release) key.release()
+      key.isDown = false
+      key.isUp = true
+    }
+    event.preventDefault()
+  }
+  //Attach event listeners
+  window.addEventListener(
+    "keydown", key.downHandler.bind(key), false
+  )
+  window.addEventListener(
+    "keyup", key.upHandler.bind(key), false
+  )
+  return key
+}
