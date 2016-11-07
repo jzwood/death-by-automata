@@ -30,10 +30,7 @@ function onConnect(nsp, socket, cache, roomId){
   cache[roomId] = cache[roomId] || {}
   cache[roomId][clean(socket.id)] = {
     room: roomId,
-    x: 100,
-    y: 100,
-    vx: 0,
-    vy: 0
+    x: 100, y: 100
   }
 
   socket.join(roomId)
@@ -51,8 +48,6 @@ function onUserSync(socket,cache){
         if(user.x !== props.x || user.y !== props.y){
           user.x = props.x
           user.y = props.y
-          user.vx = props.vx
-          user.vy = props.vy
           socket.broadcast.to(userRoom).emit('sync',cache[userRoom])
         }
       }catch(e){
