@@ -19,7 +19,7 @@ function newClubHouse() {
 function newClubMember(name, isMe=false) {
     let member = {},
         x = 0, y = 0, vx = 0, vy = 0, friction = 0
-    const maxVel = 2, accel = 0.1, scale = 50
+    const maxVel = 2, accel = 0.1, scale = 50, border = 2
 
     const color = isMe ? 0x009E60 : 0xFF9E9E
 
@@ -27,17 +27,37 @@ function newClubMember(name, isMe=false) {
     let drawSelf = (() => {
       // set a fill and line style
       graphics.beginFill(color)
-      graphics.lineStyle(4, 0xcccccc, 1)
+      graphics.lineStyle(2 * border, 0xcccccc, 1)
       // draw a shape
-      graphics.moveTo(0, scale)
-      graphics.lineTo(scale, scale)
-      graphics.lineTo(scale, 0)
-      graphics.lineTo(0, 0)
-      graphics.lineTo(0, scale)
+      graphics.drawRect(0,0,scale,scale)
       graphics.endFill()
+
       stage.addChild(graphics)
       member.graphics = graphics //store in member object
     })()
+
+    let state = {'up':false,'down':false,'left':false,'right':false, 'time':0},
+    move = (vel,vertical) => {
+      friction = 1
+      vertical ? x += vel : y += vel
+    },
+    updatePosition = () => {
+      if (state.right) move(maxVel,true)
+      if (state.left) move(-maxVel,true)
+      if (state.down) move(maxVel,false)
+      if (state.up) move(-maxVel,false)
+
+      //gravity
+
+
+      //wall collisions
+      if (x > local.canvasWidth - scale - border) x = local.canvasWidth - scale - border;
+      else if (x < border) x = border;
+      if (y > local.canvasHeight - scale - border) y = local.canvasHeight - scale - border;
+      else if (y < border) y = border;
+
+
+    }
 
     if (isMe){
       let left = keyboard(37),
@@ -45,42 +65,31 @@ function newClubMember(name, isMe=false) {
           right = keyboard(39),
           down = keyboard(40)
 
-      let move = (vel,vertical) => {
-        friction = 1
-        // vx = Math.min(Math.max(vx + vel,-maxVel),maxVel)
-        vertical ? x += vel : y += vel
-      }
-
-      left.press = () => {
-        move(-maxVel,true)
-      }
-      right.press = () => {
-        move(maxVel,true)
-      }
-
-      up.press = () => {
-        move(-maxVel,false)
-      }
-      down.press = () => {
-        move(maxVel,false)
-      }
-
-      // // Left arrow key `release` method
-      // left.release = () => {
-      //   if (!right.isDown) {
-      //     friction = 0.99
-      //   }
-      // }
+      left.press = () => { state.left = true; }
+      left.release = () => { state.left = false; }
+      right.press = () => { state.right = true; }
+      right.release = () => { state.right = false; }
+      up.press = () => { state.up = true; }
+      up.release = () => { state.up = false; }
+      down.press = () => { state.down = true; }
+      down.release = () => { state.down = false; }
     }
 
     member.update = () => {
-      // x += vx
-      // vx *= friction
-      graphics.x = x
-      graphics.y = y
+      if (isMe) {
+        updatePosition()
+        graphics.x = x
+        graphics.y = y
+      }else{
+        const smoothness = 0.1
+        let dx = (x - graphics.x) * smoothness,
+        dy = (y - graphics.y) * smoothness
+
+        graphics.x += dx
+        graphics.y += dy
+      }
     }
 
-    // newShip.rotate = (angle, isDeg = false) => { if (isDeg) { angle *= Math.PI / 180 } r += angle }
     member.getProps = () => {
         return {
             'x': x, 'y': y, 'vx': vx, 'vy': vy

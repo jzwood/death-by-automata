@@ -11,11 +11,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 })
 
 function setup() {
+  const width = 800, height = 600
   //Aliases
   Container = PIXI.Container,
   autoDetectRenderer = PIXI.autoDetectRenderer,
   stage = new Container(),
-  renderer = autoDetectRenderer(800, 600, {
+  renderer = autoDetectRenderer(width, height, {
     antialiasing: false,
     transparent: false,
     backgroundColor: 0x1099bb,
@@ -24,6 +25,8 @@ function setup() {
 
   document.body.appendChild(renderer.view)
   local = {
+    canvasWidth: width,
+    canvasHeight: height,
     clubHouse: newClubHouse()
   }
   draw()
