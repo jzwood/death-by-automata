@@ -9,7 +9,11 @@ function newClubHouse() {
   return {
     update : () => {
       for (let member of map.values()) {
-        member.update()
+        if(member.isSelf()){
+          member.update(map.values())
+        }else{
+          member.update()
+        }
       }
     },
     getMap: () => { return map }
@@ -18,12 +22,14 @@ function newClubHouse() {
 
 function newClubMember(name, isMe=false) {
     let member = {},
-        x = 0, y = 0, vy = 0, isFalling = true
-    const maxVel = 2, scale = 50, border = 2, timeIncr = 0.025
-
+        x = 0, y = 0, vy = 0, isFalling = true, isColliding = false, others = false
+    const maxVel = 2, scale = 50, border = 2, timeIncr = 0.025, gravity = -2
     const color = isMe ? 0x009E60 : 0xFF9E9E
 
+    member.isSelf = () => { return isMe; }
+
 		let graphics = new PIXI.Graphics()
+
     let drawSelf = (() => {
       // set a fill and line style
       graphics.beginFill(color)
@@ -40,6 +46,20 @@ function newClubMember(name, isMe=false) {
     move = (vel) => {
       x += vel
     },
+    detectCollisions = () => {
+      if (others){
+        const contactZone = scale + 2 * border
+        for (let member of others){
+          if (!member.isSelf()){
+            let pos = member.getProps()
+            if (Math.abs(pos.x - x) < contactZone && Math.abs(pos.y - y) < contactZone){
+              return true
+            }
+          }
+        }
+      }
+      return false
+    },
     jump = (magnitude) => {
       if (! isFalling){
         isFalling = true
@@ -47,8 +67,8 @@ function newClubMember(name, isMe=false) {
       }
     },
     updatePosition = () => {
-      const gravity = -2
 
+      let tX = x, tY = y
       //from key presses
       if (state.right) move(maxVel)
       if (state.left) move(-maxVel)
@@ -56,19 +76,28 @@ function newClubMember(name, isMe=false) {
 
       vy -= 0.1 * gravity
       //gravity
-      y += vy + -0.5 * gravity
+      y += vy ;//+ -0.5 * gravity
 
-      //wall collisions
-      const maxWidth = local.canvasWidth - scale - border,
-      maxHeight = local.canvasHeight - scale - border
-      if (x > maxWidth) x = maxWidth
-      else if (x < border) x = border
-      if (y > maxHeight){
-        y = maxHeight
-        isFalling = false
+      const maxWidth = local.canvasWidth - scale - border, maxHeight = local.canvasHeight - scale - border
+      // const maxWidth = local.canvasWidth - scale, maxHeight = local.canvasHeight - scale
+
+      let isWall = (() => {
+        //wall collisions
+        // return x > maxWidth || x < border || y > maxHeight || y < border
+        if (x > maxWidth) x = maxWidth
+        else if (x < border) x = border
+        if (y > maxHeight){ y = maxHeight; isFalling = false; vy = 0 }
+        else if (y < border) y = border
+      })()
+
+      if (detectCollisions()){
+        console.log(Math.abs(x-tX),Math.abs(y-tY))
+        x = tX
+        y = tY
+
         vy = 0
+        isFalling = false
       }
-      else if (y < border) y = border
 
     }
 
@@ -88,18 +117,20 @@ function newClubMember(name, isMe=false) {
       down.release = () => { state.down = false; }
     }
 
-    member.update = () => {
+    member.update = (theOthers=false) => {
+      others = theOthers
       let dx = (x - graphics.x),
       dy = (y - graphics.y)
-      let smoothness
+      let decayX, decayY
       if (isMe) {
         updatePosition()
-        smoothness = 0.8
+        decayX = decayY = 0.8
       }else{
-        smoothness = 0.1
+        decayX = 0.1
+        decayY = 0.3
       }
-      graphics.x += dx * smoothness
-      graphics.y += dy * smoothness
+      graphics.x += dx * decayX
+      graphics.y += dy * decayY
     }
 
     member.getProps = () => {
