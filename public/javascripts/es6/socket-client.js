@@ -33,8 +33,9 @@ socket.on('removeUser', userId => {
 function pingServer(ids){
   pingServer = Function("") //prevents initSocketListener from being used more than once
   var updateServer = window.setInterval( () => {
-    if(local.clubHouse.getMap().get(socket.id)){
-      socket.emit('updateUser', local.clubHouse.getMap().get(socket.id).getProps())
+    let me = local.clubHouse.getMap().get(socket.id)
+    if(me){
+      socket.emit('updateUser', me.getProps())
     }
   }, 100)
 }

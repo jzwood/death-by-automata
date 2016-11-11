@@ -138,7 +138,7 @@ function newClubMember(name, isMe=false) {
       let decayX, decayY
       if (isMe) {
         updatePosition()
-        decayX = decayY = 0.3;//0.8
+        decayX = decayY = 0.8
       }else{
         decayX = 0.1
         decayY = 0.3
@@ -161,14 +161,19 @@ function newClubMember(name, isMe=false) {
     return member
 }
 
+let isMyId = id => {
+  return id === socket.id
+}
+
 function initMember(id, data) {
-    let isMe =  socket.id === id
-    let member = newClubMember(id, isMe)
+    let member = newClubMember(id, isMyId(id))
     member.setProps(data)
     local.clubHouse.getMap().set(id, member)
 }
 
 function updateMember(id, data) {
-    let member = local.clubHouse.getMap().get(id)
-    member.setProps(data)
+    if (!isMyId(id)){
+      let member = local.clubHouse.getMap().get(id)
+      member.setProps(data)
+    }
 }
