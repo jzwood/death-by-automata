@@ -22,8 +22,8 @@ function newClubHouse() {
 
 function newClubMember(name, isMe=false) {
     let member = {},
-        x = 0, y = 0, vy = 0, isFalling = true, isColliding = false, others = false
-    const maxVel = 2, scale = 50, border = 2, timeIncr = 0.025, gravity = -2
+        x = 0, y = 0, vy = 0, isFalling = true, isColliding = false, underfoot = false, others = false
+    const maxVel = 2, scale = 50, border = 2, timeIncr = 0.025, gravity = -2, vyConst = 0.1 * gravity
     const color = isMe ? 0x009E60 : 0xFF9E9E
 
     member.isSelf = () => { return isMe; }
@@ -46,19 +46,18 @@ function newClubMember(name, isMe=false) {
     move = (vel) => {
       x += vel
     },
-    detectCollisions = () => {
+    detectCollisions = (onCollision) => {
       if (others){
-        const contactZone = scale + 2 * border
+        const contactZone = scale + 1 * border
         for (let member of others){
           if (!member.isSelf()){
             let pos = member.getProps()
             if (Math.abs(pos.x - x) < contactZone && Math.abs(pos.y - y) < contactZone){
-              return true
+              onCollision(pos.x, pos.y)
             }
           }
         }
       }
-      return false
     },
     jump = (magnitude) => {
       if (! isFalling){
@@ -67,37 +66,52 @@ function newClubMember(name, isMe=false) {
       }
     },
     updatePosition = () => {
-
-      let tX = x, tY = y
       //from key presses
-      if (state.right) move(maxVel)
-      if (state.left) move(-maxVel)
-      if (state.up) jump(7)
+      let getKeyState = (() => {
+        if (state.right) move(maxVel)
+        if (state.left) move(-maxVel)
+        if (state.up) jump(7)
+      })()
 
-      vy -= 0.1 * gravity
-      //gravity
-      y += vy ;//+ -0.5 * gravity
+      let upkeep = (() => {
+        vy -= vyConst
+        //gravity
+        y += vy ;//+ -0.5 * gravity
+        underfoot = false
+      })()
 
       const maxWidth = local.canvasWidth - scale - border, maxHeight = local.canvasHeight - scale - border
-      // const maxWidth = local.canvasWidth - scale, maxHeight = local.canvasHeight - scale
+
+      detectCollisions((otherX,otherY) => {
+        let dx = Math.abs(otherX-x), dy = Math.abs(otherY-y), sign
+        if (dy > dx){
+          if(y - otherY < 0){
+            sign = 1
+            vy = 0
+            // underfoot = false
+            isFalling = false
+          }else{
+            underfoot = true
+            sign = -1
+          }
+          y += sign * vyConst
+        }else{
+          sign = (x - otherX < 0) ? -1 : 1
+          x += sign * maxVel
+        }
+      })
 
       let isWall = (() => {
         //wall collisions
         // return x > maxWidth || x < border || y > maxHeight || y < border
         if (x > maxWidth) x = maxWidth
         else if (x < border) x = border
-        if (y > maxHeight){ y = maxHeight; isFalling = false; vy = 0 }
+        if (y > maxHeight){
+          y = maxHeight; vy = 0
+          isFalling = underfoot ? true : false
+        }
         else if (y < border) y = border
       })()
-
-      if (detectCollisions()){
-        console.log(Math.abs(x-tX),Math.abs(y-tY))
-        x = tX
-        y = tY
-
-        vy = 0
-        isFalling = false
-      }
 
     }
 
@@ -124,7 +138,7 @@ function newClubMember(name, isMe=false) {
       let decayX, decayY
       if (isMe) {
         updatePosition()
-        decayX = decayY = 0.8
+        decayX = decayY = 0.3;//0.8
       }else{
         decayX = 0.1
         decayY = 0.3
