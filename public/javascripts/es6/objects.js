@@ -48,7 +48,7 @@ function newClubMember(name, isMe=false) {
     },
     detectCollisions = (onCollision) => {
       if (others){
-        const contactZone = scale + 1 * border
+        const contactZone = scale + 2 * border
         for (let member of others){
           if (!member.isSelf()){
             let pos = member.getProps()
@@ -88,7 +88,6 @@ function newClubMember(name, isMe=false) {
           if(y - otherY < 0){
             sign = 1
             vy = 0
-            // underfoot = false
             isFalling = false
           }else{
             underfoot = true
@@ -103,7 +102,6 @@ function newClubMember(name, isMe=false) {
 
       let isWall = (() => {
         //wall collisions
-        // return x > maxWidth || x < border || y > maxHeight || y < border
         if (x > maxWidth) x = maxWidth
         else if (x < border) x = border
         if (y > maxHeight){
