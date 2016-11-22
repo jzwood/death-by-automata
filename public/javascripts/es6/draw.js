@@ -22,8 +22,8 @@ function setup() {
     backgroundColor: 0x1099bb,
     resolution: 1
   })
-
-  document.body.appendChild(renderer.view)
+  document.querySelector('.wrapper__canvas').appendChild(renderer.view)
+  // document.body.appendChild(renderer.view)
   local = {
     canvasWidth: width,
     canvasHeight: height,

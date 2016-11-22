@@ -48,12 +48,14 @@ function newClubMember(name, isMe=false) {
     },
     detectCollisions = (onCollision) => {
       if (others){
-        const contactZone = scale + 2 * border
+        const epsilon = 0.01
+        const contactZone = scale + 2 * border - epsilon
         for (let member of others){
           if (!member.isSelf()){
             let pos = member.getProps()
             if (Math.abs(pos.x - x) < contactZone && Math.abs(pos.y - y) < contactZone){
               onCollision(pos.x, pos.y)
+              console.log('col')
             }
           }
         }
@@ -82,21 +84,20 @@ function newClubMember(name, isMe=false) {
 
       const maxWidth = local.canvasWidth - scale - border, maxHeight = local.canvasHeight - scale - border
 
-      detectCollisions((otherX,otherY) => {
-        let dx = Math.abs(otherX-x), dy = Math.abs(otherY-y), sign
+      detectCollisions((otherX, otherY) => {
+        let dx = Math.abs(otherX-x), dy = Math.abs(otherY-y)
         if (dy > dx){
           if(y - otherY < 0){
-            sign = 1
-            vy = 0
+            y += vyConst
             isFalling = false
+            vy = Math.min(vy,0)
           }else{
             underfoot = true
-            sign = -1
+            y -= vyConst
+            vy = Math.max(vy,0)
           }
-          y += sign * vyConst
         }else{
-          sign = (x - otherX < 0) ? -1 : 1
-          x += sign * maxVel
+          x += (x - otherX < 0) ? -maxVel : maxVel
         }
       })
 
@@ -132,7 +133,7 @@ function newClubMember(name, isMe=false) {
     member.update = (theOthers=false) => {
       others = theOthers
       let dx = (x - graphics.x),
-      dy = (y - graphics.y)
+          dy = (y - graphics.y)
       let decayX, decayY
       if (isMe) {
         updatePosition()

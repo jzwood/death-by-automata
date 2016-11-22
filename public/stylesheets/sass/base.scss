@@ -5,13 +5,14 @@
 @import 'clickable';
 
 
-.sketch-container {
-  width: 640px;
-  height: 480px;
-  margin: 0 auto;
-  border: black solid 2px;
-  border-radius: $subtle-radius;
-  canvas {
-    border-radius: $subtle-radius;
+.wrapper {
+  width: 100%;
+  height: 100vh;
+  margin:0;
+  padding:0;
+
+  @include e('canvas') {
+    display: flex;
+    justify-content: center;
   }
 }
