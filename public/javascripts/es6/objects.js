@@ -98,7 +98,7 @@ function newClubMember(name, isMe=false) {
           if(y - otherY < 0){
             //in air collision where you're on bottom
             y += vyConst
-            isFalling = false
+            if(Math.abs(dx-dy) > 0.8) isFalling = false //prevent super jump bug
             vy = Math.min(vy,0) //you want your vy to be <= 0
           }else{
             //in air collision where you're on top
