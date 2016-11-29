@@ -22,13 +22,18 @@ function newClubHouse() {
 
 function newClubMember(name, isMe=false) {
     let member = {},
-        x = 0, y = 0, vy = 0, isFalling = true, isColliding = false, underfoot = false, others = false
-    const maxVel = 2, scale = 50, border = 2, timeIncr = 0.025, gravity = -2, vyConst = 0.1 * gravity
+        x = 0, y = 0, vy = 0,
+        isFalling = true, isColliding = false, underfoot = false,
+        others = false, winning = false
+    const maxVel = 2, scale = 70, border = 2, timeIncr = 0.025, gravity = -2, vyConst = 0.1 * gravity,
+    divLine = local.dividerLine - scale / 2
     const color = isMe ? 0x009E60 : 0xFF9E9E
 
     member.isSelf = () => { return isMe; }
 
 		let graphics = new PIXI.Graphics()
+    // texture = PIXI.Texture.fromImage('images/sprite1.png'),
+    // sprite = new PIXI.Sprite(texture)
 
     let drawSelf = (() => {
       // set a fill and line style
@@ -42,11 +47,14 @@ function newClubMember(name, isMe=false) {
       member.graphics = graphics //store in member object
     })()
 
-    let state = {'up':false,'down':false,'left':false,'right':false, 'time':0 },
+    let state = {'up':false, 'down':false, 'left':false, 'right':false, 'time':0 },
     move = (vel) => {
       x += vel
     },
-    detectCollisions = (onCollision) => {
+    detectWinning = onWinning => {
+      winning = isMe && y < divLine
+    },
+    detectCollisions = onCollision => {
       if (others){
         const epsilon = 0.01
         const contactZone = scale + 2 * border - epsilon
@@ -62,9 +70,9 @@ function newClubMember(name, isMe=false) {
       }
     },
     jump = (magnitude) => {
-      if (! isFalling){
+      if (!isFalling){
         isFalling = true
-        vy = -magnitude
+        vy -= magnitude
       }
     },
     updatePosition = () => {
@@ -76,7 +84,7 @@ function newClubMember(name, isMe=false) {
       })()
 
       let upkeep = (() => {
-        vy -= vyConst
+        vy += (winning) ? vyConst : -vyConst
         //gravity
         y += vy ;//+ -0.5 * gravity
         underfoot = false
@@ -88,13 +96,15 @@ function newClubMember(name, isMe=false) {
         let dx = Math.abs(otherX-x), dy = Math.abs(otherY-y)
         if (dy > dx){
           if(y - otherY < 0){
+            //in air collision where you're on bottom
             y += vyConst
             isFalling = false
-            vy = Math.min(vy,0)
+            vy = Math.min(vy,0) //you want your vy to be <= 0
           }else{
+            //in air collision where you're on top
             underfoot = true
             y -= vyConst
-            vy = Math.max(vy,0)
+            vy = Math.max(vy,0) //you want your vy to be >= 0
           }
         }else{
           x += (x - otherX < 0) ? -maxVel : maxVel
@@ -115,6 +125,7 @@ function newClubMember(name, isMe=false) {
     }
 
     if (isMe){
+
       let left = keyboard(37),
           up = keyboard(38),
           right = keyboard(39),
@@ -131,6 +142,8 @@ function newClubMember(name, isMe=false) {
     }
 
     member.update = (theOthers=false) => {
+      detectWinning()
+
       others = theOthers
       let dx = (x - graphics.x),
           dy = (y - graphics.y)
@@ -142,6 +155,7 @@ function newClubMember(name, isMe=false) {
         decayX = 0.1
         decayY = 0.3
       }
+      //move box
       graphics.x += dx * decayX
       graphics.y += dy * decayY
     }
@@ -166,7 +180,13 @@ let isMyId = id => {
 
 function initMember(id, data) {
     let member = newClubMember(id, isMyId(id))
-    member.setProps(data)
+    //default server x and y value
+    if(data.x !== -1 && data.y !== -1){
+      member.setProps(data)
+    }else{
+      //local default x and y init position
+      member.setProps({x: local.canvasWidth/2, y: local.canvasHeight/2})
+    }
     local.clubHouse.getMap().set(id, member)
 }
 

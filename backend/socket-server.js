@@ -30,9 +30,8 @@ function onConnect(nsp, socket, cache, roomId){
   cache[roomId] = cache[roomId] || {}
   cache[roomId][clean(socket.id)] = {
     room: roomId,
-    x: 100, y: 100
+    x: -1, y: -1
   }
-
   socket.join(roomId)
   nsp.to(roomId).emit('sync', cache[roomId])
   console.log('user connected.')

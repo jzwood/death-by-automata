@@ -2,7 +2,7 @@
 
 let PIXI, Container, autoDetectRenderer, stage, renderer, loader
 
-//local "globals" will populate this POJO
+//local "globals" populate this POJO
 let local
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -22,12 +22,13 @@ function setup() {
     backgroundColor: 0x1099bb,
     resolution: 1
   })
+
   document.querySelector('.wrapper__canvas').appendChild(renderer.view)
-  // document.body.appendChild(renderer.view)
   local = {
     canvasWidth: width,
     canvasHeight: height,
-    clubHouse: newClubHouse()
+    clubHouse: newClubHouse(),
+    dividerLine: drawZones(width, height)
   }
   draw()
 }
