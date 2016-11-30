@@ -12,7 +12,9 @@ socket.emit('init',window.location.pathname.slice(-40))
 socket.on('sync', users => {
   const roomUsers = Object.keys(users)
   for (const key of roomUsers) {
-    local.clubHouse.getMap().has(key) ? updateMember(key,users[key]) : initMember(key,users[key])
+    if (local){
+      local.clubHouse.getMap().has(key) ? updateMember(key,users[key]) : initMember(key,users[key])
+    }
   }
 })
 
