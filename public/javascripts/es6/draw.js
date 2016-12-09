@@ -2,6 +2,8 @@
 
 let PIXI, Container, autoDetectRenderer, stage, renderer, loader
 
+let MainLoop = declareWeak(window.MainLoop)
+
 //local "globals" populate this POJO
 let local
 
@@ -30,11 +32,15 @@ function setup() {
     clubHouse: newClubHouse(),
     dividerLine: drawZones(width, height)
   }
-  draw()
+
+  // run game
+  MainLoop.setMaxAllowedFPS(60).setUpdate(update).setDraw(draw).start()
 }
 
-function draw() {
-  requestAnimationFrame(draw)
-  local.clubHouse.update()
+function update(delta){
+  local.clubHouse.update(delta)
+}
+
+function draw(interpolationPercentage){
   renderer.render(stage)
 }

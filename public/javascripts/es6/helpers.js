@@ -7,6 +7,18 @@ function mod(val, base){
 			return temp
 }
 
+function declareWeak(val){
+	return (typeof val === 'undefined') ? undefined : val
+}
+
+function declareWeakArray(arr){
+	for(var i=0, n=arr.length; i<n; i++){
+		var globalItem = window[arr[i]]
+		globalItem = (typeof globalItem === 'undefined') ? undefined : globalItem
+	}
+}
+
+
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the

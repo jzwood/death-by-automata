@@ -11,11 +11,11 @@
   "dependencies": {
     "body-parser": "~1.15.1",
     "cookie-parser": "~1.4.3",
+    "cookies": "^0.6.1",
     "express": "~4.13.4",
     "hbs": "~4.0.0",
-    "socket.io": "^1.4.8",
-    "cookies": "^0.6.1",
-    "sha1": "^1.1.1"
+    "sha1": "^1.1.1",
+    "socket.io": "^1.4.8"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
@@ -30,7 +30,6 @@
     "gulp-uglify": "^2.0.0",
     "parallelshell": "^2.0.0"
   },
-  "license": "MIT",
   "engines": {
     "node": "v6.3.1"
   }
