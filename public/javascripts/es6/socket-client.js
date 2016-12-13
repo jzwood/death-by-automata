@@ -1,10 +1,10 @@
 "use strict";
 
-var io
-let socket = (() => {
+let io = declareWeak(window.io)
+let socket = IIFE(() => {
   var isPrivate = location.href.indexOf('/private')
   return isPrivate > 0 ? io('/private') : io('/public')
-})()
+})
 
 //hopefully alerts the server which room socket should join
 socket.emit('init',window.location.pathname.slice(-40))
@@ -24,28 +24,16 @@ socket.on('removeUser', userId => {
   if (map.has(userId)){
     stage.removeChild(map.get(userId).graphics)
     map.delete(userId)
-
   }else{
     console.log("Deleting non-existent user:",userId)
   }
-
 })
 
-// Should only be called once
-function pingServer(ids){
-  pingServer = Function("") //prevents initSocketListener from being used more than once
-  var updateServer = window.setInterval( () => {
-    if(local){
-      let me = local.clubHouse.getMap().get(socket.id)
-      if(me){
-        socket.emit('updateUser', me.getProps())
-      }
+function pingServer(ids) {
+  if (local) {
+    let me = local.clubHouse.getMap().get(socket.id)
+    if (me) {
+      socket.emit('updateUser', me.getProps())
     }
-  }, 100)
+  }
 }
-
-
-// start pinging server
-(socket => {
-  pingServer()
-})()

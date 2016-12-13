@@ -4,6 +4,7 @@
 Object Factory
 */
 
+// Stores User States
 function newClubHouse() {
   let map = new Map()
   return {
@@ -20,39 +21,20 @@ function newClubHouse() {
   }
 }
 
+// User Object
 function newClubMember(name, isMe=false) {
     let member = {},
-        x = 0, y = 0, vy = 0,
-        isFalling = true, isColliding = false, underfoot = false,
-        others = false, winning = false
-    const maxVel = 2, scale = 70, border = 2, timeIncr = 0.025, gravity = -2, vyConst = 0.1 * gravity,
-    divLine = local.dividerLine - scale / 2
-    const color = isMe ? 0x009E60 : 0xFF9E9E
+        index = 0, others = false
+    const maxVel = 2, scale = 70, border = 2
 
     member.isSelf = () => { return isMe; }
 
-		let graphics = new PIXI.Graphics()
-    // texture = PIXI.Texture.fromImage('images/sprite1.png'),
-    // sprite = new PIXI.Sprite(texture)
+    let keyState = {'up':false, 'down':false, 'left':false, 'right':false}
+    if (isMe) assignKeys(keyState)
 
-    let drawSelf = (() => {
-      // set a fill and line style
-      graphics.beginFill(color)
-      graphics.lineStyle(2 * border, 0xcccccc, 1)
-      // draw a shape
-      graphics.drawRect(0,0,scale,scale)
-      graphics.endFill()
-
-      stage.addChild(graphics)
-      member.graphics = graphics //store in member object
-    })()
-
-    let state = {'up':false, 'down':false, 'left':false, 'right':false, 'time':0 },
-    move = (vel) => {
-      x += vel
-    },
-    detectWinning = onWinning => {
-      winning = isMe && y < divLine
+		let move = (dx,dy) => {
+      x += dx
+      y += dy
     },
     detectCollisions = onCollision => {
       if (others){
@@ -69,80 +51,18 @@ function newClubMember(name, isMe=false) {
         }
       }
     },
-    jump = (magnitude) => {
-      if (!isFalling){
-        isFalling = true
-        vy -= magnitude
-      }
-    },
     updatePosition = () => {
       //from key presses
-      let getKeyState = (() => {
-        if (state.right) move(maxVel)
-        if (state.left) move(-maxVel)
-        if (state.up) jump(7)
-      })()
-
-      let upkeep = (() => {
-        vy += (winning) ? vyConst : -vyConst
-        //gravity
-        y += vy ;//+ -0.5 * gravity
-        underfoot = false
-      })()
-
-      const maxWidth = local.canvasWidth - scale - border, maxHeight = local.canvasHeight - scale - border
-
-      detectCollisions((otherX, otherY) => {
-        let dx = Math.abs(otherX-x), dy = Math.abs(otherY-y)
-        if (dy > dx){
-          if(y - otherY < 0){
-            //in air collision where you're on bottom
-            y += vyConst
-            if(Math.abs(dx-dy) > 0.8) isFalling = false //prevent super jump bug
-            vy = Math.min(vy,0) //you want your vy to be <= 0
-          }else{
-            //in air collision where you're on top
-            underfoot = true
-            y -= vyConst
-            vy = Math.max(vy,0) //you want your vy to be >= 0
-          }
-        }else{
-          x += (x - otherX < 0) ? -maxVel : maxVel
-        }
+      IIFE(getKeyState = () => {
+        if (state.right) move(1,0)
+        if (state.left) move(-1,0)
+        if (state.up) move(0,1)
+        if (state.down) move(0,-1)
       })
 
-      let isWall = (() => {
-        //wall collisions
-        if (x > maxWidth) x = maxWidth
-        else if (x < border) x = border
-        if (y > maxHeight){
-          y = maxHeight; vy = 0
-          isFalling = underfoot ? true : false
-        }
-        else if (y < border) y = border
-      })()
-
-    }
-
-    if (isMe){
-
-      let left = keyboard(37),
-          up = keyboard(38),
-          right = keyboard(39),
-          down = keyboard(40)
-
-      left.press = () => { state.left = true; }
-      left.release = () => { state.left = false; }
-      right.press = () => { state.right = true; }
-      right.release = () => { state.right = false; }
-      up.press = () => { state.up = true; }
-      up.release = () => { state.up = false; }
-      down.press = () => { state.down = true; }
-      down.release = () => { state.down = false; }
     }
 
     member.update = (theOthers=false) => {
-      detectWinning()
 
       others = theOthers
       let dx = (x - graphics.x),
@@ -174,7 +94,7 @@ function newClubMember(name, isMe=false) {
     return member
 }
 
-let isMyId = id => {
+function isMyId = id => {
   return id === socket.id
 }
 
@@ -190,7 +110,7 @@ function initMember(id, data) {
     local.clubHouse.getMap().set(id, member)
 }
 
-function updateMember(id, data) {
+function updateMemberInformation(id, data) {
     if (!isMyId(id)){
       let member = local.clubHouse.getMap().get(id)
       member.setProps(data)

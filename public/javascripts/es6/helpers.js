@@ -7,6 +7,30 @@ function mod(val, base){
 			return temp
 }
 
+function IIFE(fnx){
+	fnx()
+}
+
+function acceptableIndex(i) {
+	return i >= 0 && i < arrLen
+}
+
+function assignKeys(p){
+	let left = keyboard(37),
+			up = keyboard(38),
+			right = keyboard(39),
+			down = keyboard(40)
+
+	left.press = () => { p.left = true; }
+	left.release = () => { p.left = false; }
+	right.press = () => { p.right = true; }
+	right.release = () => { p.right = false; }
+	up.press = () => { p.up = true; }
+	up.release = () => { p.up = false; }
+	down.press = () => { p.down = true; }
+	down.release = () => { p.down = false; }
+}
+
 function declareWeak(val){
 	return (typeof val === 'undefined') ? undefined : val
 }
