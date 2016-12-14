@@ -11,8 +11,33 @@ function IIFE(fnx){
 	fnx()
 }
 
-function acceptableIndex(i) {
-	return i >= 0 && i < arrLen
+function acceptableIndex(i,n) {
+	return i >= 0 && i < n
+}
+
+function isMyId(id) {
+	if(local.sock.id){
+		return id === local.sock.id
+	}else{
+		console.warn('local.sock.id not set')
+		return false
+	}
+}
+
+/**
+ * Updates the FPS counter.
+ *
+ * @param {Number} fps
+ *   The smoothed frames per second.
+ * @param {Boolean} panic
+ *   Whether the main loop panicked because the simulation fell too far behind
+ *   real time.
+ */
+function end(fps, panic) {
+  if (panic) {
+    var discardedTime = Math.round(MainLoop.resetFrameDelta());
+    console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
+  }
 }
 
 function assignKeys(p){

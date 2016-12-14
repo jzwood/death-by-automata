@@ -1,0 +1,8 @@
+{
+  "forin": true,
+  "asi": true,
+  "esversion": 6,
+  "strict": "implied",
+  "unused": true,
+  "predef": [ "console","window", "clearTimeout", "setTimeout", "local", "acceptableIndex" ]
+}

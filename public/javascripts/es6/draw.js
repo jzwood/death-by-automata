@@ -1,36 +1,61 @@
-"use strict";
+let MainLoop = declareWeak(window.MainLoop),
+background = declareWeak(window.background),
+createCanvas = declareWeak(window.createCanvas)
 
-let MainLoop = declareWeak(window.MainLoop)
+let io =  declareWeak(window.io)
 
 //local "globals" populate this POJO
 let local
 
-document.addEventListener("DOMContentLoaded", function(event) {
-  console.log("DOM fully loaded and parsed")
-  setup()
-})
-
 function setup() {
-  const width = 600, height = 600, gridSize = 15
+  const size = 645
+  let gridSize = 15
 
-  document.querySelector('.wrapper__canvas').appendChild(renderer.view)
+  while(size%gridSize !== 0){
+    gridSize++
+  }
+  console.log('gridSize',gridSize)
+
+  let canvas = createCanvas(640, 640)
+  canvas.parent('wrapper__canvas')
+  canvas.class('wrapper__canvas__p5')
+
+  console.log('waiting for network connection')
+  let waitForNetwork = window.setInterval(()=>{
+    console.count('attempts')
+    if(io){
+      console.log('network connected')
+      start(size,gridSize)
+      clearInterval(waitForNetwork)
+    }
+  },100)
+}
+
+function start(s,g){
+
+  const isPrivate = location.href.indexOf('/private')
+  let socket = isPrivate > 0 ? io('/private') : io('/public')
+
   local = {
-    canvasWidth: width,
-    canvasHeight: height,
-    environment: newEnvironment(gridSize)
-    // , clubHouse: newClubHouse()
+    canvasWidth: s,
+    canvasHeight: s,
+    environment: newEnvironment(g),
+    sock: socket,
+    clubHouse: newClubHouse()
   }
 
 
+  connectToServer(socket)
   // run game
-  MainLoop.setMaxAllowedFPS(60).setUpdate(update).setDraw(paint).start()
+  MainLoop.setMaxAllowedFPS(60).setUpdate(update).setDraw(paint).setEnd(end).start()
 }
 
 function update(delta){
   local.clubHouse.update(delta)
-  local.environment.updateGraphics(delta)
 }
 
 function paint(interpolationPercentage){
-  background(0xcccccc)
+  local.environment.updateGraphics(interpolationPercentage)
 }
+
+function draw(){}
