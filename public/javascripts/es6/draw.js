@@ -1,22 +1,18 @@
-let MainLoop = declareWeak(window.MainLoop),
-background = declareWeak(window.background),
-createCanvas = declareWeak(window.createCanvas)
-
-let io =  declareWeak(window.io)
-
+var background, createCanvas, io
 //local "globals" populate this POJO
 let local
 
 function setup() {
-  const size = 645
-  let gridSize = 15
+  const size = 700
+  let grid = 25
 
-  while(size%gridSize !== 0){
-    gridSize++
+  while(size%grid !== 0){
+    grid++
   }
-  console.log('gridSize',gridSize)
+  console.log('grid',grid)
 
-  let canvas = createCanvas(640, 640)
+  let canvas = createCanvas(size, size)
+
   canvas.parent('wrapper__canvas')
   canvas.class('wrapper__canvas__p5')
 
@@ -36,26 +32,22 @@ function start(s,g){
   const isPrivate = location.href.indexOf('/private')
   let socket = isPrivate > 0 ? io('/private') : io('/public')
 
-  local = {
-    canvasWidth: s,
-    canvasHeight: s,
-    environment: newEnvironment(g),
-    sock: socket,
-    clubHouse: newClubHouse()
-  }
+  local = { }
 
 
   connectToServer(socket)
   // run game
-  MainLoop.setMaxAllowedFPS(60).setUpdate(update).setDraw(paint).setEnd(end).start()
 }
 
 function update(delta){
-  local.clubHouse.update(delta)
+  local.environment.updateAutomata(delta)
+  local.environment.updateGraphics(delta)
 }
 
 function paint(interpolationPercentage){
-  local.environment.updateGraphics(interpolationPercentage)
+  local.clubHouse.update(interpolationPercentage)
 }
 
-function draw(){}
+function draw(){
+
+}

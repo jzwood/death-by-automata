@@ -1,6 +1,6 @@
 "use strict";
 
-var msgpack = require("msgpack-lite");
+// var msgpack = require("msgpack-lite");
 //
 // // encode from JS Object to MessagePack (Buffer)
 // var buffer = msgpack.encode({"foo": "bar"});
@@ -8,16 +8,16 @@ var msgpack = require("msgpack-lite");
 // // decode from MessagePack (Buffer) to JS Object
 // var data = msgpack.decode(buffer); // => {"foo": "bar"}
 
+var state = require(path.join(__dirname,'/server-state.js'))
+
 function clean(id){
   return (id.slice(id.indexOf("#")+1)).toString()
 }
-
 function getRoomById(cache,id){
   var cacheKeys = Object.keys(cache)
   for(var i=0, len = cacheKeys.length; i < len; i++){
     if(cache[cacheKeys[i]][id]) return cacheKeys[i]
-  }
-  return ''
+  } return ''
 }
 
 function networking(io, namespace) {
@@ -38,7 +38,8 @@ function onConnect(nsp, socket, cache, roomId){
   cache[roomId] = cache[roomId] || {}
   cache[roomId][clean(socket.id)] = {
     room: roomId,
-    x: -1, y: -1
+    index: 0
+    enviro: state.environment(20)
   }
   socket.join(roomId)
   nsp.to(roomId).emit('sync', cache[roomId])
@@ -52,16 +53,15 @@ function onUserSync(socket,cache){
     if(userRoom && cache[userRoom][cleanId]){
       try{
         var user = cache[userRoom][cleanId]
-        if(user.x !== props.x || user.y !== props.y){
-          user.x = props.x
-          user.y = props.y
+        if(user.index !== props){
+          user.index = props
           socket.broadcast.to(userRoom).emit('sync',cache[userRoom])
         }
       }catch(e){
         throw new Error(e.name + ': ' + e.message)
       }
     }else{
-      console.log("onUserSync is trying to find room:",userRoom,'with id:',cleanId," against cache", cache, ". Room Not Found.")
+      console.warn("onUserSync is trying to find room:",userRoom,'with id:',cleanId," against cache", cache, ". Room Not Found.")
     }
   })
 }
@@ -80,7 +80,7 @@ function onDisconnect(socket,cache){
         delete cache[userRoom]
       }
     }else{
-      console.log("onDisconnect is trying to find room:",userRoom,'with id:',clean(socket.id),". Room Not Found.")
+      console.warn("onDisconnect is trying to find room:",userRoom,'with id:',clean(socket.id),". Room Not Found.")
     }
   })
 }

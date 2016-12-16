@@ -15,6 +15,23 @@ function acceptableIndex(i,n) {
 	return i >= 0 && i < n
 }
 
+function getSquare(i,dx,dy,dim) {
+	let index = i
+	const xdisp = index % dim + dx
+	if(acceptableIndex(xdisp, dim)){
+		index += dx
+	} else {
+		return 0
+	}
+	const ydisp = index + dy * dim
+	if(acceptableIndex(ydisp, dim*dim)){
+		index = ydisp
+	} else {
+		return 0
+	}
+	return index
+}
+
 function isMyId(id) {
 	if(local.sock.id){
 		return id === local.sock.id
@@ -44,7 +61,8 @@ function assignKeys(p){
 	let left = keyboard(37),
 			up = keyboard(38),
 			right = keyboard(39),
-			down = keyboard(40)
+			down = keyboard(40),
+			r = keyboard(82)
 
 	left.press = () => { p.left = true; }
 	left.release = () => { p.left = false; }
@@ -54,6 +72,8 @@ function assignKeys(p){
 	up.release = () => { p.up = false; }
 	down.press = () => { p.down = true; }
 	down.release = () => { p.down = false; }
+	r.press = () => { p.r = true; }
+	r.release = () => { p.r = false; }
 }
 
 function declareWeak(val){
@@ -67,58 +87,14 @@ function declareWeakArray(arr){
 	}
 }
 
-
-// Returns a function, that, as long as it continues to be invoked, will not
-// be triggered. The function will be called after it stops being called for
-// N milliseconds. If `immediate` is passed, trigger the function on the
-// leading edge, instead of the trailing.
-function debounce(func, wait, immediate) {
-	var timeout
-	return function() {
-		var context = this, args = arguments
-		var later = function() {
-			timeout = null
-			if (!immediate) func.apply(context, args)
+function throttle(func, ms){
+	var last = 0;
+	return function(){
+		var a = arguments, t = this, now = +(new Date);
+		//b/c last = 0 will still run the first time called
+		if(now >= last + ms){
+			last = now;
+			func.apply(t, a);
 		}
-		var callNow = immediate && !timeout
-		clearTimeout(timeout)
-		timeout = setTimeout(later, wait)
-		if (callNow) func.apply(context, args)
 	}
-}
-
-//The `keyboard` helper function
-function keyboard(keyCode) {
-  var key = {}
-  key.code = keyCode
-  key.isDown = false
-  key.isUp = true
-  key.press = undefined
-  key.release = undefined
-  //The `downHandler`
-  key.downHandler = (event) => {
-    if (event.keyCode === key.code) {
-      if (key.isUp && key.press) key.press()
-      key.isDown = true
-      key.isUp = false
-    }
-    event.preventDefault()
-  }
-  //The `upHandler`
-  key.upHandler = (event) => {
-    if (event.keyCode === key.code) {
-      if (key.isDown && key.release) key.release()
-      key.isDown = false
-      key.isUp = true
-    }
-    event.preventDefault()
-  }
-  //Attach event listeners
-  window.addEventListener(
-    "keydown", key.downHandler.bind(key), false
-  )
-  window.addEventListener(
-    "keyup", key.upHandler.bind(key), false
-  )
-  return key
 }
