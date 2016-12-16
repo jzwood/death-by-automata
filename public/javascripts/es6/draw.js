@@ -1,53 +1,43 @@
-var background, createCanvas, io
-//local "globals" populate this POJO
-let local
+var io, socket
 
-function setup() {
-  const size = 700
-  let grid = 25
 
-  while(size%grid !== 0){
-    grid++
+let p5App = new p5(app)
+
+function app(p){
+
+  const size = 700, grid = 25
+  let controller = newController(size),
+  user = newUser()
+  //p5 calls setup automatically (once)
+  p.setup = () => {
+    //initial grid dimensions
+    console.assert(size%grid === 0)
+
+    //inserts canvas in DOM
+    let canvas = p.createCanvas(size, size)
+    canvas.parent('wrapper__canvas')
+    canvas.class('wrapper__canvas__p5')
+
+    //attempts to connect to server
+    console.log('waiting for network connection')
+    let waitForNetwork = window.setInterval(() => {
+      console.count('attempts')
+      if(io){
+        console.log('network connected')
+        start()
+        clearInterval(waitForNetwork)
+      }
+    },100)
   }
-  console.log('grid',grid)
 
-  let canvas = createCanvas(size, size)
+  function start(){
+    const isPrivate = location.href.indexOf('/private')
+    socket = isPrivate > 0 ? io('/private') : io('/public')
+    connectToServer(socket,collection)
+  }
 
-  canvas.parent('wrapper__canvas')
-  canvas.class('wrapper__canvas__p5')
-
-  console.log('waiting for network connection')
-  let waitForNetwork = window.setInterval(()=>{
-    console.count('attempts')
-    if(io){
-      console.log('network connected')
-      start(size,gridSize)
-      clearInterval(waitForNetwork)
-    }
-  },100)
-}
-
-function start(s,g){
-
-  const isPrivate = location.href.indexOf('/private')
-  let socket = isPrivate > 0 ? io('/private') : io('/public')
-
-  local = { }
-
-
-  connectToServer(socket)
-  // run game
-}
-
-function update(delta){
-  local.environment.updateAutomata(delta)
-  local.environment.updateGraphics(delta)
-}
-
-function paint(interpolationPercentage){
-  local.clubHouse.update(interpolationPercentage)
-}
-
-function draw(){
-
+  //p5 calls draw (animation loop) automatically
+  p.draw = () => {
+    controller.draw()
+  }
 }

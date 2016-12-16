@@ -2,7 +2,7 @@
  * Clubhouse Factory
  */
 
-function newCollection(dimensions) {
+function newController(dimensions) {
   let map = new Map()
   let rules = []
   function parseRules(r){
@@ -22,7 +22,7 @@ function newCollection(dimensions) {
   }
 }
 
-function newUser(id){
+function newUser(){
 
   return {
     setRules(r){
