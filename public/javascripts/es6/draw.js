@@ -33,11 +33,11 @@ function app(p){
   function start(){
     const isPrivate = location.href.indexOf('/private')
     socket = isPrivate > 0 ? io('/private') : io('/public')
-    connectToServer(socket,collection)
+    connectToServer(socket,controller)
   }
 
   //p5 calls draw (animation loop) automatically
   p.draw = () => {
-    controller.draw()
+    controller.animate()
   }
 }

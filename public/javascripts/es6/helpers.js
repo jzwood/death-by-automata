@@ -57,23 +57,43 @@ function end(fps, panic) {
   }
 }
 
-function assignKeys(p){
-	let left = keyboard(37),
-			up = keyboard(38),
-			right = keyboard(39),
-			down = keyboard(40),
-			r = keyboard(82)
+//The `keyboard` helper function
+function keyboard(keyCode) {
+  var key = {}
+  key.code = keyCode
+  key.isDown = false
+  key.isUp = true
+  key.press = undefined
+  key.release = undefined
+  //The `downHandler`
+  key.downHandler = (event) => {
+    if (event.keyCode === key.code) {
+      if (key.isUp && key.press) key.press()
+      key.isDown = true
+      key.isUp = false
+    }
+    event.preventDefault()
+  }
+  //The `upHandler`
+  key.upHandler = (event) => {
+    if (event.keyCode === key.code) {
+      if (key.isDown && key.release) key.release()
+      key.isDown = false
+      key.isUp = true
+    }
+    event.preventDefault()
+  }
+  //Attach event listeners
+  window.addEventListener( "keydown", key.downHandler.bind(key), false )
+  window.addEventListener( "keyup", key.upHandler.bind(key), false )
+  return key
+}
 
-	left.press = () => { p.left = true; }
-	left.release = () => { p.left = false; }
-	right.press = () => { p.right = true; }
-	right.release = () => { p.right = false; }
-	up.press = () => { p.up = true; }
-	up.release = () => { p.up = false; }
-	down.press = () => { p.down = true; }
-	down.release = () => { p.down = false; }
-	r.press = () => { p.r = true; }
-	r.release = () => { p.r = false; }
+function assignKeys(p){
+	let enter = keyboard(13)
+
+	enter.press = () => { p.left = true; }
+	enter.release = () => { p.left = false; }
 }
 
 function declareWeak(val){

@@ -3,8 +3,33 @@
  */
 
 function newController(dimensions) {
-  let map = new Map()
+  let user = newUser(),
+  animator = newAnimator()
+
+  return {
+    onEnter(s,keycode){
+      if(keycode === 13){
+        user.setRules()
+        s.emit('updateUser', user.getRule())
+      }
+    },
+    'animate': animator.draw()
+  }
+}
+
+function newAnimator(){
+  let state = []
+  const colors = ['red','blue','yellow','white']
+  return {
+    draw(){
+    }
+  }
+}
+
+function newUser(){
   let rules = []
+  let terminal = document.querySelector('.terminal__input')
+
   function parseRules(r){
     //parse S/B rules
     let sb = r.split('/').map( i => {
@@ -12,24 +37,11 @@ function newController(dimensions) {
     })
   }
   return {
-    draw(){
+    readInput(){
+      rules.push(parseRules(terminal.textContent))
     },
-    getMap(){ return map },
-    initMember(id){
-      let user = newUser(id)
-      map.set(id, user)
-    }
-  }
-}
-
-function newUser(){
-
-  return {
-    setRules(r){
-        rules.push(r)
-    },
-    getRules(){
-      return rules.slice(-1)
+    getRule(){
+      return rules.slice(-1).toString()
     }
   }
 }

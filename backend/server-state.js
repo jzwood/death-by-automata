@@ -1,7 +1,8 @@
 module.exports = {
 
-  'environment': function newEnvironment(dim) {
-    var board = [],
+  'controller': function() {
+    var dim = 20,
+    board = [],
     dimSquared = dim * dim
     board.length = dimSquared
     board.fill(0)
@@ -9,6 +10,8 @@ module.exports = {
     var boardTemp = []
     boardTemp.length = dimSquared
     boardTemp.fill(0)
+
+    var colors = ['#ff0000','#ff00ff','#00ffff','#00ff00','#ffff00']
 
     function getSquare(i,dx,dy) {
       return (acceptableIndex(index % dim + dx, dim) &&
@@ -26,15 +29,24 @@ module.exports = {
     }
 
     return {
-      updateAutomata : function(callback) {
+      updateAutomata : function(rules) {
         for (var i = 0; i < dimSquared; i++) {
           var indices = getIndices(i)
-          var newIndexValue = callback(indices)
+          var newIndexValue = parseSB(rules,indices)
           boardTemp[i] = newIndexValue
         }
         board = boardTemp.slice(0) //cloning boardTemp
       }
+    },
+    getBoard : function(){
+      return board
     }
+
+  }
+}
+
+function parseSB(rs, str){
+  for(var i=0, n=rs.length; i<n; i++){
 
   }
 }

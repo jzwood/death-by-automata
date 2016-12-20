@@ -13,76 +13,86 @@ var state = require(path.join(__dirname,'/server-state.js'))
 function clean(id){
   return (id.slice(id.indexOf("#")+1)).toString()
 }
+
+module.exports = {
+  networking: function(io, namespace) {
+
+    var nsp = io.of(namespace),
+    ids = {},
+    allClients = [],
+    clientRooms = []
+
+    nsp.on('connection', function(socket) {
+      allClients.push(socket)
+
+      socket.on('init',function(room){
+        clientRooms[allClients.indexOf(socket)] = room
+        onFirstConnect(socket, cache, room)
+      })
+
+      socket.on('clientDataPush',function(room, newRule){
+        cache[room].rules[clean(socket.id)].rule = newRule
+      })
+
+      socket.on('clientDataRequest', function(room){
+          socket.volatile.emit('updateUser', cache[room].control.getBoard())
+      })
+
+      //splices socket out of client socket list
+      socket.on('disconnect', function() {
+        var si = allClients.indexOf(socket)
+
+        if(!(si + 1)){ //remove when we're sure this isn't a thing
+          console.error('error - allClients:', allClients)
+        }
+
+        allClients.splice(si, 1)
+        room = clientRooms.splice(si, 1)
+
+        delete cache[room][clean(socket.id)]
+        if (!allClients.length){
+          cache = {} //if no one is connected hard reset
+          clientRooms = []
+        }
+      })
+    })
+  }
+}
+
 function getRoomById(cache,id){
   var cacheKeys = Object.keys(cache)
-  for(var i=0, len = cacheKeys.length; i < len; i++){
+  for(var i=0, n = cacheKeys.length; i < n; i++){
     if(cache[cacheKeys[i]][id]) return cacheKeys[i]
   } return ''
 }
 
-function networking(io, namespace) {
-
-  var nsp = io.of(namespace),
-  cache = {}
-
-  nsp.on('connection', function(socket) {
-    socket.on('init',function(room){
-      onConnect(nsp, socket, cache, room)
-    })
-    onDisconnect(socket,cache)
-    onUserSync(socket,cache)
-  })
-}
-
-function onConnect(nsp, socket, cache, roomId){
-  cache[roomId] = cache[roomId] || {}
-  cache[roomId][clean(socket.id)] = {
-    room: roomId,
-    index: 0
-    enviro: state.environment(20)
+//inits cache if !exists and joins room
+function onFirstConnect(socket, cache, room){
+  cache[room] = cache[room] || {
+    rules: {},
+    control: state.controller()
   }
-  socket.join(roomId)
-  nsp.to(roomId).emit('sync', cache[roomId])
-  console.log('user connected.')
+  var usersInRoom = Object.keys(cache[room].rules).length
+  if(usersInRoom < 4){ //4 max players to room
+    var cleanId = clean(socket.id)
+    cache[room].rules[cleanId].color = usersInRoom
+    cache[room].rules[cleanId].rule = ''
+
+    socket.join(roomId)
+    console.log('user',clean(socket.id), 'connected to room',clean(socket.id))
+  }else{
+    console.warn('4 users maximum to room')
+  }
 }
 
-function onUserSync(socket,cache){
-  socket.on('updateUser', function(props){
-    var cleanId = clean(socket.id),
-    userRoom = getRoomById(cache, cleanId)
-    if(userRoom && cache[userRoom][cleanId]){
-      try{
-        var user = cache[userRoom][cleanId]
-        if(user.index !== props){
-          user.index = props
-          socket.broadcast.to(userRoom).emit('sync',cache[userRoom])
-        }
-      }catch(e){
-        throw new Error(e.name + ': ' + e.message)
-      }
-    }else{
-      console.warn("onUserSync is trying to find room:",userRoom,'with id:',cleanId," against cache", cache, ". Room Not Found.")
-    }
-  })
+function throttle(func, ms){
+	var last = 0;
+	return function(){
+		var a = arguments, t = this, now = +(new Date);
+		//b/c last = 0 will still run the first time called
+		if(now >= last + ms){
+			last = now;
+			func.apply(t, a);
+		}
+	}
 }
-
-function onDisconnect(socket,cache){
-  socket.on('disconnect', function() {
-    var cleanId = clean(socket.id),
-    userRoom = getRoomById(cache,clean(socket.id))
-    console.log('socket ',clean(socket.id),'attempting to disconnect')
-    if(userRoom){
-      var user = cache[userRoom][cleanId]
-      socket.broadcast.to(userRoom).emit('removeUser', cleanId)
-      console.log('user in room ',user.room,' erased.')
-      delete cache[userRoom][cleanId]
-      if(Object.keys(cache[userRoom]).length === 0){
-        delete cache[userRoom]
-      }
-    }else{
-      console.warn("onDisconnect is trying to find room:",userRoom,'with id:',clean(socket.id),". Room Not Found.")
-    }
-  })
-}
-
-exports.networking = networking;
