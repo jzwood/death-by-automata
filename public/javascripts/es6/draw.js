@@ -1,7 +1,6 @@
 var io, socket
 
-
-let p5App = new p5(app)
+let p5App = new window.p5(app)
 
 function app(p){
 
@@ -25,7 +24,7 @@ function app(p){
       if(io){
         console.log('network connected')
         start()
-        clearInterval(waitForNetwork)
+        window.clearInterval(waitForNetwork)
       }
     },100)
   }
@@ -33,11 +32,37 @@ function app(p){
   function start(){
     const isPrivate = location.href.indexOf('/private')
     socket = isPrivate > 0 ? io('/private') : io('/public')
-    connectToServer(socket,controller)
+    //hopefully alerts the server which room socket should join
+    const room = window.location.pathname.slice(-40)
+    socket.emit('init',room)
+    socket.on('updateBoard', board => {
+      controller.update(board)
+    })
+    addKeyPressListener(socket,room,controller.onEnter)
   }
 
   //p5 calls draw (animation loop) automatically
   p.draw = () => {
     controller.animate()
   }
+}
+
+function addKeyPressListener(s,r,callback){
+  const timePerCall = 500
+  document.addEventListener('keydown', function(event) {
+    event.preventDefault()
+    throttle(callback(s,r,event.keyCode),timePerCall)
+ }, false)
+}
+
+function throttle(func, ms){
+	var last = 0;
+	return function(){
+		var a = arguments, t = this, now = +(new Date);
+		//b/c last = 0 will still run the first time called
+		if(now >= last + ms){
+			last = now;
+			func.apply(t, a);
+		}
+	}
 }

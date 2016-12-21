@@ -10,18 +10,28 @@ function newController(dimensions) {
     onEnter(s,keycode){
       if(keycode === 13){
         user.setRules()
-        s.emit('updateUser', user.getRule())
+        s.emit('clientDataPush', user.getRule())
       }
     },
-    'animate': animator.draw()
+    update: state => {
+      animator.setState(state)
+    },
+    animate: () => {
+      animator.draw()
+    }
   }
 }
 
 function newAnimator(){
   let state = []
-  const colors = ['red','blue','yellow','white']
+  const colors = ['#000000','#ff00ff','#00ffff','#00ff00','#ffff00','#ff0000']
+
   return {
     draw(){
+      
+    },
+    setState(s){
+      state = s.slice(0)
     }
   }
 }

@@ -7,35 +7,34 @@
 //
 // // decode from MessagePack (Buffer) to JS Object
 // var data = msgpack.decode(buffer); // => {"foo": "bar"}
-
-var state = require(path.join(__dirname,'/server-state.js'))
+var path = require('path'),
+state = require(path.join(__dirname,'/server-state.js'))
 
 function clean(id){
   return (id.slice(id.indexOf("#")+1)).toString()
 }
 
+function IIFE(f){f()}
+
 module.exports = {
   networking: function(io, namespace) {
 
     var nsp = io.of(namespace),
-    ids = {},
     allClients = [],
-    clientRooms = []
+    clientRooms = [],
+    allTimers = {},
+    cache = {}
 
     nsp.on('connection', function(socket) {
       allClients.push(socket)
 
       socket.on('init',function(room){
         clientRooms[allClients.indexOf(socket)] = room
-        onFirstConnect(socket, cache, room)
+        onFirstConnect(socket, cache, room, allTimers)
       })
 
       socket.on('clientDataPush',function(room, newRule){
-        cache[room].rules[clean(socket.id)].rule = newRule
-      })
-
-      socket.on('clientDataRequest', function(room){
-          socket.volatile.emit('updateUser', cache[room].control.getBoard())
+        cache[room].setRules(clean(socket.id),newRule)
       })
 
       //splices socket out of client socket list
@@ -47,52 +46,57 @@ module.exports = {
         }
 
         allClients.splice(si, 1)
-        room = clientRooms.splice(si, 1)
+        var room = clientRooms.splice(si, 1)
 
         delete cache[room][clean(socket.id)]
-        if (!allClients.length){
-          cache = {} //if no one is connected hard reset
+
+        if(!Object.keys(cache[room]).length){ //if no one in room -> tear it down
+          cache[room].decommission() //potentially unnecessary
+          delete cache[room]
+          window.clearInterval(allTimers[room])
+          console.log('No one connected to room:',room,'. Tearing it down.')
+        }
+
+        if (!allClients.length){ //if no one in any room -> tear everything down / hard reset (redundancy)
+          cache = {}
           clientRooms = []
+          IIFE(function(){
+            var timers = Object.values(allTimers)
+            for(var i=0, n=timers.length; i<n; i++){
+              window.clearInterval(timers[i])
+            }
+          })
+          allTimers = {}
+          console.log('No one connected -- hard reset')
         }
       })
     })
   }
 }
 
-function getRoomById(cache,id){
-  var cacheKeys = Object.keys(cache)
-  for(var i=0, n = cacheKeys.length; i < n; i++){
-    if(cache[cacheKeys[i]][id]) return cacheKeys[i]
-  } return ''
-}
-
 //inits cache if !exists and joins room
-function onFirstConnect(socket, cache, room){
-  cache[room] = cache[room] || {
-    rules: {},
-    control: state.controller()
+function onFirstConnect(socket, cache, room, allTimers){
+  cache[room] = cache[room] || state.controller()
+
+  if(!cache[room]) {
+    cache[room] = state.controller()
+    var wait = 200,
+    timer = window.setInterval(function(){
+      cache[room].updateAutomata()
+      socket.volatile.emit('updateBoard', cache[room].getBoard())
+    },wait)
+    allTimers[room] = timer
   }
-  var usersInRoom = Object.keys(cache[room].rules).length
+
+  var usersInRoom = Object.keys(cache[room].getPlayerData()).length
   if(usersInRoom < 4){ //4 max players to room
     var cleanId = clean(socket.id)
-    cache[room].rules[cleanId].color = usersInRoom
-    cache[room].rules[cleanId].rule = ''
+    cache[room].setColor(cleanId, usersInRoom)
+    cache[room].setRules(cleanId,'')
 
-    socket.join(roomId)
+    socket.join(room)
     console.log('user',clean(socket.id), 'connected to room',clean(socket.id))
   }else{
     console.warn('4 users maximum to room')
   }
-}
-
-function throttle(func, ms){
-	var last = 0;
-	return function(){
-		var a = arguments, t = this, now = +(new Date);
-		//b/c last = 0 will still run the first time called
-		if(now >= last + ms){
-			last = now;
-			func.apply(t, a);
-		}
-	}
 }
