@@ -4,23 +4,20 @@ let p5App = new window.p5(app)
 
 function app(p){
 
-  const size = 700, grid = 25
-  let controller = newController(size),
-  user = newUser()
+  const size = 500
+  let controller = newController(size,p)
+
   //p5 calls setup automatically (once)
   p.setup = () => {
-    //initial grid dimensions
-    console.assert(size%grid === 0)
-
     //inserts canvas in DOM
-    let canvas = p.createCanvas(size, size)
+    let canvas = p.createCanvas(size + 1, size + 1)
     canvas.parent('wrapper__canvas')
     canvas.class('wrapper__canvas__p5')
 
     //attempts to connect to server
     console.log('waiting for network connection')
     let waitForNetwork = window.setInterval(() => {
-      console.count('attempts')
+      console.count('connection attempts')
       if(io){
         console.log('network connected')
         start()
@@ -34,6 +31,13 @@ function app(p){
     socket = isPrivate > 0 ? io('/private') : io('/public')
     //hopefully alerts the server which room socket should join
     const room = window.location.pathname.slice(-40)
+
+    // p.noStroke()
+    p.stroke('#363636')
+    p.strokeWeight(1)
+    p.strokeCap(p.SQUARE)
+
+
     socket.emit('init',room)
     socket.on('updateBoard', board => {
       controller.update(board)
@@ -43,6 +47,7 @@ function app(p){
 
   //p5 calls draw (animation loop) automatically
   p.draw = () => {
+    p.background("#cccccc")
     controller.animate()
   }
 }

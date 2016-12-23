@@ -3,7 +3,7 @@
 module.exports = {
 
   controller: function(){
-    var dim = 20,
+    var dim = 50,
     board = [],
     dimSquared = dim * dim
     board.length = dimSquared
@@ -13,12 +13,20 @@ module.exports = {
     boardTemp.length = dimSquared
     boardTemp.fill(0)
 
+    var t = 0
+    for(var i=0; i<dimSquared; i++){
+      // boardTemp[i] = ~~(Math.random() * 1.2)
+      board[i] = ~~(Math.random() * 2)
+      if(board[i] === 1) t++
+    }
+    console.log(t/dimSquared)
+
     var playerData = {}
 
     function getSquare(i,dx,dy) {
-      return (acceptableIndex(index % dim + dx, dim) &&
-              acceptableIndex(index + dy * dim, dimSquared)) ?
-              board[index + dx + dy * dim] : 0
+      return (acceptableIndex(i % dim + dx, dim) &&
+              acceptableIndex(i + dy * dim, dimSquared)) ?
+              board[i + dx + dy * dim] : 0
     }
 
     function getIndices(i){
@@ -30,15 +38,6 @@ module.exports = {
       ]
     }
 
-    function updateAutomata(){
-      for (var i = 0; i < dimSquared; i++) {
-        var neighbors = getIndices(i)
-        var index = board[i]
-        boardTemp[i] = getNewIndex(rules,index,neighors)
-      }
-      board = boardTemp.slice(0) //cloning boardTemp
-    }
-
     return {
       setRules: function(id,rule){
         playerData[id] = playerData[id] || {}
@@ -47,6 +46,10 @@ module.exports = {
       setColor: function(id,color){
         playerData[id] = playerData[id] || {}
         playerData[id].color = color
+      },
+      whackPlayer: function(id){
+        delete playerData[id]
+        return Object.keys(playerData).length
       },
       getPlayerData: function(){
         return playerData
@@ -58,13 +61,24 @@ module.exports = {
       },
       getBoard: function(){
         return board
+      },
+      updateAutomata: function(){
+        for (var i = 0; i < dimSquared; i++) {
+          var indices = getIndices(i)
+          var index = board[i]
+          var newIndex = getNewIndex(playerData, index, indices)
+          // if (newIndex) boardTemp[i] = newIndex
+          boardTemp[i] = newIndex
+          // board[i] = newIndex
+        }
+        board = boardTemp.slice(0) //cloning boardTemp
       }
     }
   }
 }
 
 function countArray(a){
-  out = {}
+  var out = {}
   for(var i=0, n=a.length; i<n; i++){
       if(!out[a[i]]) out[a[i]] = 0
       out[a[i]]++
@@ -72,15 +86,24 @@ function countArray(a){
 }
 
 
-function getNewIndex(rules, index, neighbors){
-  var users = Object.values(rs)
-  var neighbors = countArray(inds)
+function getNewIndex(playerData, index, indices){
+  var users = Object.keys(playerData).map(function(key) {
+      return playerData[key]
+    })
+  var neighbors = countArray(indices)
   var proposals = []
+
   for(var i=0, n=users.length; i<n; i++){
-    var sb = str.split('/')
+
+    // var sb = users[i].rule.split('/')
+    var sb = '12345/3'.split('/')
+    // console.log(neighbors,users)
     var living = neighbors[users[i].color]
+
     if ((index && sb[0].indexOf(living)+1) || (!index && sb[1].indexOf(living)+1)){
       proposals.push(users[i].color)
+    }else{
+      proposals.push(0)
     }
   }
   return proposals.length === 0 ? 0 : (
