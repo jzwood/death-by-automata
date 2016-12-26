@@ -16,7 +16,7 @@ module.exports = {
     var t = 0
     for(var i=0; i<dimSquared; i++){
       // boardTemp[i] = ~~(Math.random() * 1.2)
-      board[i] = ~~(Math.random() * 2)
+      board[i] = ~~(Math.random() * 1.2)
       if(board[i] === 1) t++
     }
     console.log(t/dimSquared)
@@ -69,11 +69,24 @@ module.exports = {
           var newIndex = getNewIndex(playerData, index, indices)
           // if (newIndex) boardTemp[i] = newIndex
           boardTemp[i] = newIndex
-          // board[i] = newIndex
         }
+
+        boardTemp[0] = 1
+        boardTemp[dim - 1] = 2
+        boardTemp[dimSquared - dim] = 3
+        boardTemp[dimSquared - 1] = 4
+
         board = boardTemp.slice(0) //cloning boardTemp
       }
     }
+  }
+}
+
+function initColors(boardTemp,playerData){
+  var players = Object.keys(playerData)
+  for(var i=0; i<players.length; i++){
+    var data = playerData[players[i]]
+
   }
 }
 
@@ -95,15 +108,15 @@ function getNewIndex(playerData, index, indices){
 
   for(var i=0, n=users.length; i<n; i++){
 
-    // var sb = users[i].rule.split('/')
-    var sb = '12345/3'.split('/')
-    // console.log(neighbors,users)
-    var living = neighbors[users[i].color]
+    var sb = users[i].rule.split('/')
 
-    if ((index && sb[0].indexOf(living)+1) || (!index && sb[1].indexOf(living)+1)){
-      proposals.push(users[i].color)
-    }else{
-      proposals.push(0)
+    if(sb.length >= 2){
+      var living = neighbors[users[i].color]
+      if ((index && sb[0].indexOf(living)+1) || (!index && sb[1].indexOf(living)+1)){
+        proposals.push(users[i].color)
+      }else{
+        proposals.push(0)
+      }
     }
   }
   return proposals.length === 0 ? 0 : (

@@ -46,8 +46,8 @@ function newAnimator(size, p5){
 
 function newUser(){
   let rules = []
-  // let terminal = document.querySelector('.terminal__input')
-  let terminal = { textContent: '123/3' }
+  let terminal = document.querySelector('.wrapper__terminal')
+  // let terminal = { textContent: '23/3' }
 
   function parseRules(r){
     //parse S/B rules
@@ -59,7 +59,7 @@ function newUser(){
   }
   return {
     readInput(){
-      rules.push(parseRules(terminal.textContent))
+      rules.push(parseRules(terminal.value))
     },
     getRule(){
       let rule = rules.slice(-1).toString()

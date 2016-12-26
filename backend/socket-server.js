@@ -99,7 +99,7 @@ function onFirstConnect(socket, cache, room, allTimers){
   var usersInRoom = Object.keys(cache[room].getPlayerData()).length
   if(usersInRoom < 4){ //4 max players to room
     var cleanId = clean(socket.id)
-    cache[room].setColor(cleanId, usersInRoom + 1)
+    cache[room].setColor(cleanId, usersInRoom + 1) //because 0 is reserved for black
     cache[room].setRules(cleanId,'/')
 
     socket.join(room)
