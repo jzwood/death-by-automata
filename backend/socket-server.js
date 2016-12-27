@@ -28,7 +28,7 @@ module.exports = {
 
       socket.on('init',function(room){
         clientRooms[allClients.indexOf(socket)] = room
-        onFirstConnect(socket, cache, room, allTimers)
+        onFirstConnect(nsp, socket, cache, room, allTimers)
       })
 
       socket.on('clientDataPush',function(room, newRule){
@@ -51,6 +51,7 @@ module.exports = {
         if(cache[room]){
 
           var remainingPlayers = cache[room].whackPlayer(clean(socket.id))
+          console.log('User',clean(socket.id),'disconnected from room,',room)
 
           if(!remainingPlayers){ //if no one in room -> tear it down
             cache[room].decommission() //potentially unnecessary
@@ -83,15 +84,15 @@ module.exports = {
 }
 
 //inits cache if !exists and joins room
-function onFirstConnect(socket, cache, room, allTimers){
+function onFirstConnect(nsp, socket, cache, room, allTimers){
   if(!cache[room]) {
     console.log('no controller for room',room,'. instantiating controller.')
     cache[room] = state.controller()
-    var wait = 200,
+    var wait = 250,
     timer = setInterval(function(){
-      // console.log(cache[room].getBoard().slice(0,10))
       cache[room].updateAutomata()
-      socket.volatile.emit('updateBoard', cache[room].getBoard())
+      // socket.volatile.emit('updateBoard', cache[room].getBoard())
+      nsp.to(room).emit('updateBoard', cache[room].getBoard())
     },wait)
     allTimers[room] = timer
   }

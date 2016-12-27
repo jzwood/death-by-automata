@@ -13,14 +13,6 @@ module.exports = {
     boardTemp.length = dimSquared
     boardTemp.fill(0)
 
-    var t = 0
-    for(var i=0; i<dimSquared; i++){
-      // boardTemp[i] = ~~(Math.random() * 1.2)
-      board[i] = ~~(Math.random() * 1.2)
-      if(board[i] === 1) t++
-    }
-    console.log(t/dimSquared)
-
     var playerData = {}
 
     function getSquare(i,dx,dy) {
@@ -119,6 +111,10 @@ function getNewIndex(playerData, index, indices){
       }
     }
   }
+  proposals = proposals.filter(function(val){
+    return val > 0
+  })
+
   return proposals.length === 0 ? 0 : (
     proposals.length === 1 ? proposals.pop() : 5
   )
