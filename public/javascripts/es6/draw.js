@@ -32,16 +32,24 @@ function app(p){
     //hopefully alerts the server which room socket should join
     const room = window.location.pathname.slice(-40)
 
-    // p.noStroke()
-    p.stroke('#363636')
+    p.noStroke()
+    // p.stroke('#363636')
+    p.stroke('#111111')
     p.strokeWeight(1)
     p.strokeCap(p.SQUARE)
 
 
     socket.emit('init',room)
+
     socket.on('updateBoard', board => {
       controller.update(board)
     })
+
+    socket.on('removeInputfield', warning => {
+      document.querySelector('.wrapper__terminal').remove()
+      document.querySelector('.warning').textContent = warning
+    })
+
     addKeyPressListener(socket,room,controller.onEnter)
   }
 
@@ -55,7 +63,6 @@ function app(p){
 function addKeyPressListener(s,r,callback){
   const timePerCall = 500
   document.addEventListener('keydown', function(event) {
-    //event.preventDefault()
     throttle(callback(s,r,event.keyCode),timePerCall)
  }, false)
 }

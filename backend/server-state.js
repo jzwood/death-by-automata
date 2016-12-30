@@ -3,7 +3,7 @@
 module.exports = {
 
   controller: function(){
-    var dim = 50,
+    var dim = 75,
     board = [],
     dimSquared = dim * dim
     board.length = dimSquared
@@ -15,10 +15,20 @@ module.exports = {
 
     var playerData = {}
 
+    function isInBoard(i,dx,dy){
+      return acceptableIndex(i % dim + dx, dim) && acceptableIndex(i + dy * dim, dimSquared)
+    }
+
     function getSquare(i,dx,dy) {
-      return (acceptableIndex(i % dim + dx, dim) &&
-              acceptableIndex(i + dy * dim, dimSquared)) ?
-              board[i + dx + dy * dim] : 0
+      // return acceptableIndex(i % dim + dx, dim) &&
+      //        acceptableIndex(i + dy * dim, dimSquared) ? board[i + dx + dy * dim] : 0
+      return isInBoard(i,dx,dy) ? board[i + dx + dy * dim] : 0
+    }
+
+    function getIndex(i,dx,dy) {
+      // return acceptableIndex(i % dim + dx, dim) &&
+      //        acceptableIndex(i + dy * dim, dimSquared) ? i + dx + dy * dim : 0
+      return isInBoard(i,dx,dy) ? i + dx + dy * dim : 0
     }
 
     function getIndices(i){
@@ -28,6 +38,36 @@ module.exports = {
         getSquare(i,1,0), getSquare(i,-1,1),
         getSquare(i,0,1), getSquare(i,1,1)
       ]
+    }
+
+    function poison(){
+      var visited = []
+      visited.length = dimSquared
+      visited.fill(0)
+      visited = visited.map(function(v,j){
+        return j%dim && (j+1)%dim && j > dim && j < (dimSquared - dim) ? 0 : 1
+      })
+      for (var i = 0; i < dimSquared; i++) {
+        if(boardTemp[i] === 5)
+          recursivelyPoison(i,visited)
+      }
+    }
+
+    function recursivelyPoison(k,visited){
+      if(!visited[k]){
+        visited[k] = 1
+        if(boardTemp[k]){
+          boardTemp[k] = 5
+          recursivelyPoison(getIndex(k,1,-1),visited)
+          recursivelyPoison(getIndex(k,1,0),visited)
+          recursivelyPoison(getIndex(k,1,1),visited)
+          recursivelyPoison(getIndex(k,0,-1),visited)
+          recursivelyPoison(getIndex(k,0,1),visited)
+          recursivelyPoison(getIndex(k,-1,-1),visited)
+          recursivelyPoison(getIndex(k,-1,0),visited)
+          recursivelyPoison(getIndex(k,-1,1),visited)
+        }
+      }return false
     }
 
     return {
@@ -62,7 +102,8 @@ module.exports = {
           // if (newIndex) boardTemp[i] = newIndex
           boardTemp[i] = newIndex
         }
-
+        poison()
+        //four corners
         boardTemp[0] = 1
         boardTemp[dim - 1] = 2
         boardTemp[dimSquared - dim] = 3
@@ -114,6 +155,16 @@ function getNewIndex(playerData, index, indices){
   proposals = proposals.filter(function(val){
     return val > 0
   })
+
+  // if (index === 5){
+  //   return 5
+  // }
+
+  // if(index && neighbors[5] > 0){
+  //   return 5
+  // }
+
+  // return proposals.length === 1 ? proposals.pop() : 0
 
   return proposals.length === 0 ? 0 : (
     proposals.length === 1 ? proposals.pop() : 5

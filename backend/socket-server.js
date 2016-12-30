@@ -88,24 +88,26 @@ function onFirstConnect(nsp, socket, cache, room, allTimers){
   if(!cache[room]) {
     console.log('no controller for room',room,'. instantiating controller.')
     cache[room] = state.controller()
-    var wait = 250,
+    var wait = 750,
     timer = setInterval(function(){
       cache[room].updateAutomata()
       // socket.volatile.emit('updateBoard', cache[room].getBoard())
-      nsp.to(room).emit('updateBoard', cache[room].getBoard())
+      nsp.to(room).volatile.emit('updateBoard', cache[room].getBoard())
     },wait)
     allTimers[room] = timer
   }
 
+  socket.join(room)
   var usersInRoom = Object.keys(cache[room].getPlayerData()).length
   if(usersInRoom < 4){ //4 max players to room
     var cleanId = clean(socket.id)
     cache[room].setColor(cleanId, usersInRoom + 1) //because 0 is reserved for black
     cache[room].setRules(cleanId,'/')
 
-    socket.join(room)
     console.log('user',clean(socket.id), 'connected to room', room)
   }else{
-    console.warn('4 users maximum to room')
+    var warning = 'This room is full. You may watch or try a new room.'
+    socket.emit('removeInputfield', warning)
+    console.warn(warning)
   }
 }
