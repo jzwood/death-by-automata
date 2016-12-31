@@ -20,14 +20,10 @@ module.exports = {
     }
 
     function getSquare(i,dx,dy) {
-      // return acceptableIndex(i % dim + dx, dim) &&
-      //        acceptableIndex(i + dy * dim, dimSquared) ? board[i + dx + dy * dim] : 0
       return isInBoard(i,dx,dy) ? board[i + dx + dy * dim] : 0
     }
 
     function getIndex(i,dx,dy) {
-      // return acceptableIndex(i % dim + dx, dim) &&
-      //        acceptableIndex(i + dy * dim, dimSquared) ? i + dx + dy * dim : 0
       return isInBoard(i,dx,dy) ? i + dx + dy * dim : 0
     }
 
@@ -49,7 +45,7 @@ module.exports = {
       })
       for (var i = 0; i < dimSquared; i++) {
         if(boardTemp[i] === 5)
-          recursivelyPoison(i,visited)
+        recursivelyPoison(i,visited)
       }
     }
 
@@ -87,9 +83,9 @@ module.exports = {
         return playerData
       },
       decommission: function(){ //attempting memory leak protection
-         board = void(0)
-         boardTemp = void(0)
-         playerData = void(0)
+        board = void(0)
+        boardTemp = void(0)
+        playerData = void(0)
       },
       getBoard: function(){
         return board
@@ -126,16 +122,16 @@ function initColors(boardTemp,playerData){
 function countArray(a){
   var out = {}
   for(var i=0, n=a.length; i<n; i++){
-      if(!out[a[i]]) out[a[i]] = 0
-      out[a[i]]++
+    if(!out[a[i]]) out[a[i]] = 0
+    out[a[i]]++
   }return out
 }
 
 
 function getNewIndex(playerData, index, indices){
   var users = Object.keys(playerData).map(function(key) {
-      return playerData[key]
-    })
+    return playerData[key]
+  })
   var neighbors = countArray(indices)
   var proposals = []
 

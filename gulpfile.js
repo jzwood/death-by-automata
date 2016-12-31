@@ -5,12 +5,13 @@ var gulp = require('gulp'),
     rename = require("gulp-rename"),
     concat = require('gulp-concat'),
     rename = require('gulp-rename'),
-    es6transpiler = require('gulp-es6-transpiler'),
+    babel = require('gulp-babel'),
     uglify = require('gulp-uglify'),
     sass = require('gulp-sass'),
     cleanCSS = require('gulp-clean-css'),
     htmlmin = require('gulp-htmlmin'),
     imagemin = require('gulp-imagemin')
+
 
 var path = {
   'sass' : 'public/stylesheets/**/*.scss',
@@ -46,7 +47,9 @@ gulp.task('sass', function () {
 gulp.task('es6', function() {
   return gulp.src(path.es6)
     .pipe(concat('main.js'))
-    .pipe(es6transpiler())
+    .pipe(babel({
+      presets: ['es2015']
+    }))
     .pipe(uglify())
     .pipe(gulp.dest(dest.build))
 })
