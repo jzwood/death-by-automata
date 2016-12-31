@@ -1,15 +1,14 @@
 <script src="/socket.io/socket.io.js"></script>
 <!-- <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script> -->
-
 <div class="nav">
   <a class="btn" href="../">Back to Home</a>
   <div class="btn btn--hover">Options</div>
 </div>
 <div class="wrapper">
-  <div class="wrapper__canvas">
-
-  </div>
+  <div id="wrapper__canvas" class="wrapper__canvas"></div>
+  <input type="text" name="terminal" value="" placeholder="123/1" class="wrapper__terminal">
+  <h3 class="warning"></h3>
 </div>
-
+<script src="/javascripts/lib/mainLoop.min.js"></script>
+<script src="/javascripts/lib/p5.min.js"></script>
 <script src="/build/main.js"></script>
-<script src="/javascripts/lib/pixi.min.js"></script>

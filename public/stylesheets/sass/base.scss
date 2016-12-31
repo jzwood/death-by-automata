@@ -11,8 +11,17 @@
   margin:0;
   padding:0;
 
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
   @include e('canvas') {
-    display: flex;
-    justify-content: center;
+
+    @include e('p5'){
+      background-color: #000000;
+      padding: 30px;
+      margin-top:20px;
+      border-radius: 10px;
+    }
   }
 }

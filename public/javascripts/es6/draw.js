@@ -1,40 +1,80 @@
-"use strict";
+var io, socket
 
-let PIXI, Container, autoDetectRenderer, stage, renderer, loader
+let p5App = new window.p5(app)
 
-//local "globals" populate this POJO
-let local
+function app(p){
 
-document.addEventListener("DOMContentLoaded", function(event) {
-  console.log("DOM fully loaded and parsed")
-  setup()
-})
+  const size = 500
+  let controller = newController(size,p)
 
-function setup() {
-  const width = 800, height = 600
-  //Aliases
-  Container = PIXI.Container,
-  autoDetectRenderer = PIXI.autoDetectRenderer,
-  stage = new Container(),
-  renderer = autoDetectRenderer(width, height, {
-    antialiasing: false,
-    transparent: false,
-    backgroundColor: 0x1099bb,
-    resolution: 1
-  })
+  //p5 calls setup automatically (once)
+  p.setup = () => {
+    //inserts canvas in DOM
+    let canvas = p.createCanvas(size + 1, size + 1)
+    canvas.parent('wrapper__canvas')
+    canvas.class('wrapper__canvas__p5')
 
-  document.querySelector('.wrapper__canvas').appendChild(renderer.view)
-  local = {
-    canvasWidth: width,
-    canvasHeight: height,
-    clubHouse: newClubHouse(),
-    dividerLine: drawZones(width, height)
+    //attempts to connect to server
+    console.log('waiting for network connection')
+    let waitForNetwork = window.setInterval(() => {
+      console.count('connection attempts')
+      if(io){
+        console.log('network connected')
+        start()
+        window.clearInterval(waitForNetwork)
+      }
+    },100)
   }
-  draw()
+
+  function start(){
+    const isPrivate = location.href.indexOf('/private')
+    socket = isPrivate > 0 ? io('/private') : io('/public')
+    //hopefully alerts the server which room socket should join
+    const room = window.location.pathname.slice(-40)
+
+    p.noStroke()
+    // p.stroke('#363636')
+    p.stroke('#111111')
+    p.strokeWeight(1)
+    p.strokeCap(p.SQUARE)
+
+
+    socket.emit('init',room)
+
+    socket.on('updateBoard', board => {
+      controller.update(board)
+    })
+
+    socket.on('removeInputfield', warning => {
+      document.querySelector('.wrapper__terminal').remove()
+      document.querySelector('.warning').textContent = warning
+    })
+
+    addKeyPressListener(socket,room,controller.onEnter)
+  }
+
+  //p5 calls draw (animation loop) automatically
+  p.draw = () => {
+    p.background("#cccccc")
+    controller.animate()
+  }
 }
 
-function draw() {
-  requestAnimationFrame(draw)
-  local.clubHouse.update()
-  renderer.render(stage)
+function addKeyPressListener(s,r,callback){
+  const timePerCall = 500
+  document.addEventListener('keydown', function(event) {
+    throttle(callback(s,r,event.keyCode),timePerCall)
+ }, false)
+}
+
+function throttle(func, ms){
+	var last = 0;
+	return function(){
+		var a = arguments, t = this, now = +(new Date);
+		//b/c last = 0 will still run the first time called
+		if(now >= last + ms){
+			last = now;
+			func.apply(t, a);
+		}
+	}
 }
