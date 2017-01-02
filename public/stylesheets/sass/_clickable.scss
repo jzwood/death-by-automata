@@ -1,17 +1,25 @@
 
 /* Block */
 .nav {
-  width:100vw;
+  // width:100vw;
   display: flex;
   justify-content: center;
+
+  @include m('black'){
+    background-color: #000;
+  }
 }
 
 .btn {
   display: inline-block;
   background-color: #ffffff;
   color: black;
-  margin: 1ch;
-  padding: 1ch;
+  margin: 5px;
+  padding: 5px;
+  @include tablet{
+    margin: 1ch;
+    padding: 1ch;
+  }
   text-align: center;
   border:1px solid black;
   border-radius: $subtle-radius;

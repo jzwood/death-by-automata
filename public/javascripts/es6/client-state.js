@@ -14,6 +14,9 @@ function newController(size, p) {
         s.emit('clientDataPush',r, user.getRule())
       }
     },
+    setSize(s){
+      animator.setSize(s)
+    },
     update(state){
       animator.setState(state)
     },
@@ -35,6 +38,10 @@ function newAnimator(size, p5){
         p5.fill(colors[state[i]])
         p5.rect( side * (i%gridSize), side * ~~(i/gridSize), side, side)
       }
+    },
+    setSize(s){
+      size = s
+      side = size / gridSize
     },
     setState(s){
       state = s.slice(0)

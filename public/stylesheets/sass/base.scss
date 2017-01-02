@@ -1,9 +1,9 @@
+@import 'fonts';
 @import 'reset';
 @import 'consts';
 @import 'mixins';
 @import 'normalize';
 @import 'clickable';
-
 
 .wrapper {
   width: 100%;
@@ -15,13 +15,15 @@
   align-items: center;
   flex-direction: column;
 
+  background-color: #000;
+
   @include e('canvas') {
 
+    margin: 20px;
+    background-color: inherit;
+
     @include e('p5'){
-      background-color: #000000;
-      padding: 30px;
-      margin-top:20px;
-      border-radius: 10px;
+
     }
   }
 }
