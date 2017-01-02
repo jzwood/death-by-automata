@@ -2,8 +2,8 @@
 /* Block */
 .nav {
   // width:100vw;
-  display: flex;
-  justify-content: center;
+  display: block;
+  text-align: center;
 
   @include m('black'){
     background-color: #000;
