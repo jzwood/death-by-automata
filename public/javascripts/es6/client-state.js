@@ -14,6 +14,9 @@ function newController(size, p) {
         s.emit('clientDataPush',r, user.getRule())
       }
     },
+    getColor(colorIndex){
+      return animator.getColor(colorIndex)
+    },
     setSize(s){
       animator.setSize(s)
     },
@@ -38,6 +41,9 @@ function newAnimator(size, p5){
         p5.fill(colors[state[i]])
         p5.rect( side * (i%gridSize), side * ~~(i/gridSize), side, side)
       }
+    },
+    getColor(colorIndex){
+      return colorIndex > 0 && colorIndex < colors.length ? colors[colorIndex] : '#fff'
     },
     setSize(s){
       size = s

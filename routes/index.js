@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 router.get('/errorMessage', function(req, res, next) {
   res.render('home', {
     title: 'Home',
-    errorMsg: 'No Spaces'
+    errorMsg: 'No Spaces Allowed'
   });
 });
 

@@ -56,15 +56,25 @@ function app(p){
       )
     }
 
-    socket.emit('init',room)
+    socket.emit('init',room)//tell server you've connected to room
+
+    const terminal = document.querySelector('.wrapper__terminal'),
+    dollar = document.querySelector('.wrapper__dollar'),
+    warning = document.querySelector('.warning')
+
+    socket.on('colorAssignment', colorIndex => {
+      const terminalColor = controller.getColor(colorIndex)
+      dollar.style.color = terminalColor
+      terminal.style.color = terminalColor
+    })
 
     socket.on('updateBoard', board => {
       controller.update(board)
     })
 
     socket.on('removeInputfield', warning => {
-      document.querySelector('.wrapper__terminal').remove()
-      document.querySelector('.warning').textContent = warning
+      terminal.remove()
+      warning.textContent = warning
     })
 
     addKeyPressListener(socket,room,controller.onEnter)

@@ -4,6 +4,7 @@
 @import 'mixins';
 @import 'normalize';
 @import 'clickable';
+@import 'header';
 
 .wrapper {
   width: 100%;
@@ -16,6 +17,31 @@
   flex-direction: column;
 
   background-color: #000;
+
+  @include m('justify'){
+    justify-content: center;
+  }
+
+  @include m('white'){
+    background-color: #fff;
+  }
+
+  @include e('dollar'){
+    color: #fff;
+    background-color: #000;
+    font-family: $code-font;
+    font-size: $medium-font;
+    padding-right: 2px;
+  }
+
+  @include e('terminal'){
+    border: 0;
+    outline: 0;
+    font-family: $code-font;
+    font-size: $medium-font;
+    color: #fff;
+    background-color: #000;
+  }
 
   @include e('canvas') {
 

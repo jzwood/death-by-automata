@@ -1,7 +1,7 @@
 
 /* Block */
 .nav {
-  // width:100vw;
+  padding-top: 20px;
   display: block;
   text-align: center;
 
@@ -24,9 +24,15 @@
   border:1px solid black;
   border-radius: $subtle-radius;
   font-size: $medium-font;
-  font-family: $mobile-font-family;
+  font-family: $code-font;
 
-  @include m('hover:hover'){
+  &:hover{
     cursor: pointer;
+  }
+
+  opacity: 1;
+  transition: opacity 1s ease;
+  @include m('hide'){
+    opacity: 0;
   }
 }

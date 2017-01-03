@@ -40,7 +40,7 @@ module.exports = {
       socket.on('disconnect', function() {
         var si = allClients.indexOf(socket)
 
-        if(!(si + 1)){ //remove when we're sure this isn't a thing
+        if(si < 0){ //remove when we're sure this isn't a thing
           console.error('error - allClients:', allClients)
         }
 
@@ -68,7 +68,6 @@ module.exports = {
               return allTimers[key]
             })
 
-            // var timers = Object.values(allTimers)
             for(var i=0, n=timers.length; i<n; i++){
               clearInterval(timers[i])
             }
@@ -100,8 +99,10 @@ function onFirstConnect(nsp, socket, cache, room, allTimers){
   socket.join(room)
   var usersInRoom = Object.keys(cache[room].getPlayerData()).length
   if(usersInRoom < 4){ //4 max players to room
-    var cleanId = clean(socket.id)
-    cache[room].setColor(cleanId, usersInRoom + 1) //because 0 is reserved for black
+    var cleanId = clean(socket.id),
+    colorIndex = usersInRoom + 1
+    socket.emit('colorAssignment', colorIndex)
+    cache[room].setColor(cleanId, colorIndex) //because 0 is reserved for black
     cache[room].setRules(cleanId,'/')
 
     console.log('user',clean(socket.id), 'connected to room', room)

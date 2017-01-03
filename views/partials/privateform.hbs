@@ -1,9 +1,12 @@
-<!-- <form action="/private" method="post">
-  <input type="text" name="room" placeholder="Private Room" class="field input"></input>
-  <input type="submit" name="name" value="submit" class="field submit">
-</form> -->
-
 <form action="/private" method="post">
-  <input type="text" name="room" placeholder="Private Room" class="btn"></input>
-  <input type="submit" name="name" value="submit" class="btn">
+  <input type="text" name="room" placeholder="$private_room_key" class="btn btn--input" autocomplete="off"></input><br>
+  <input type="submit" name="name" value="cd ./$private_room_key" class="btn btn--submit btn--hide">
 </form>
+
+<script type="text/javascript">
+  var input = document.querySelector('.btn--input'),
+  output = document.querySelector('.btn--submit')
+  input.addEventListener('input', function(e) {
+    input.value.trim() ? output.classList.remove('btn--hide') : output.classList.add('btn--hide')
+  })
+</script>
