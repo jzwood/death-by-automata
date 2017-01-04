@@ -111,14 +111,6 @@ module.exports = {
   }
 }
 
-function initColors(boardTemp,playerData){
-  var players = Object.keys(playerData)
-  for(var i=0; i<players.length; i++){
-    var data = playerData[players[i]]
-
-  }
-}
-
 function countArray(a){
   var out = {}
   for(var i=0, n=a.length; i<n; i++){
@@ -152,19 +144,11 @@ function getNewIndex(playerData, index, indices){
     return val > 0
   })
 
-  // if (index === 5){
-  //   return 5
-  // }
-
-  // if(index && neighbors[5] > 0){
-  //   return 5
-  // }
-
-  // return proposals.length === 1 ? proposals.pop() : 0
-
   return proposals.length === 0 ? 0 : (
     proposals.length === 1 ? proposals.pop() : 5
   )
+
+  return [0,proposals.slice(-1),5,5,5][proposals.length]
 }
 
 function acceptableIndex(i,n) { return i >= 0 && i < n }

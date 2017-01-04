@@ -7,10 +7,19 @@ function app(p){
   const size = 500
   let controller = newController(size,p)
 
+  let padding = 20
+
   //p5 calls setup automatically (once)
   p.setup = () => {
-    //inserts canvas in DOM
-    let canvas = p.createCanvas(size + 1, size + 1)
+
+    let canvas = p.windowWidth < size + 2 * padding? (
+      controller.setSize(p.windowWidth - padding),
+      p.createCanvas(p.windowWidth - padding, p.windowWidth - padding)
+    ) : (
+      controller.setSize(size),
+      p.createCanvas(size + 1, size + 1)
+    )
+
     canvas.parent('wrapper__canvas')
     canvas.class('wrapper__canvas__p5')
 
@@ -33,21 +42,40 @@ function app(p){
     const room = window.location.pathname.slice(-40)
 
     p.noStroke()
-    // p.stroke('#363636')
     p.stroke('#111111')
     p.strokeWeight(1)
     p.strokeCap(p.SQUARE)
 
+    p.windowResized = () => {
+      p.windowWidth < size + 2 * padding? (
+        controller.setSize(p.windowWidth - padding),
+        p.resizeCanvas(p.windowWidth - padding, p.windowWidth - padding)
+      ) : (
+        controller.setSize(size),
+        p.resizeCanvas(size + 1, size + 1)
+      )
+    }
 
-    socket.emit('init',room)
+    socket.emit('init',room)//tell server you've connected to room
+
+    const terminal = document.querySelector('.wrapper__terminal'),
+    dollar = document.querySelector('.wrapper__dollar'),
+    warningMsg = document.querySelector('.warning')
+
+    socket.on('colorAssignment', colorIndex => {
+      const terminalColor = controller.getColor(colorIndex)
+      dollar.style.color = terminalColor
+      terminal.style.color = terminalColor
+    })
 
     socket.on('updateBoard', board => {
       controller.update(board)
     })
 
     socket.on('removeInputfield', warning => {
-      document.querySelector('.wrapper__terminal').remove()
-      document.querySelector('.warning').textContent = warning
+      dollar.remove()
+      terminal.remove()
+      warningMsg.textContent = warning
     })
 
     addKeyPressListener(socket,room,controller.onEnter)
@@ -55,7 +83,7 @@ function app(p){
 
   //p5 calls draw (animation loop) automatically
   p.draw = () => {
-    p.background("#cccccc")
+    p.background("#000")
     controller.animate()
   }
 }
