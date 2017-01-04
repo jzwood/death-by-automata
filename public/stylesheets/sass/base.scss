@@ -6,6 +6,12 @@
 @import 'clickable';
 @import 'header';
 
+.warning{
+  font-family: arial, monospace;
+  font-size: 18px;
+  color: #fff;
+}
+
 .wrapper {
   width: 100%;
   height: 100vh;

@@ -97,10 +97,20 @@ function onFirstConnect(nsp, socket, cache, room, allTimers){
   }
 
   socket.join(room)
-  var usersInRoom = Object.keys(cache[room].getPlayerData()).length
-  if(usersInRoom < 4){ //4 max players to room
+  var players = cache[room].getPlayerData(),
+  usersInRoom = Object.keys(players),
+  colorIndices = []
+  for(var i=0, n=usersInRoom.length; i<n; i++){
+    var color = players[usersInRoom[i]].color
+    if(color) colorIndices.push(color)
+  }
+
+  var colorsAvailable = [4,3,2,1].filter(function(x) { return colorIndices.indexOf(x) < 0 })
+
+  if(colorsAvailable.length > 0){
     var cleanId = clean(socket.id),
-    colorIndex = usersInRoom + 1
+    // colorIndex = usersInRoom + 1
+    colorIndex = colorsAvailable.pop()
     socket.emit('colorAssignment', colorIndex)
     cache[room].setColor(cleanId, colorIndex) //because 0 is reserved for black
     cache[room].setRules(cleanId,'/')

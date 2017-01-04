@@ -60,7 +60,7 @@ function app(p){
 
     const terminal = document.querySelector('.wrapper__terminal'),
     dollar = document.querySelector('.wrapper__dollar'),
-    warning = document.querySelector('.warning')
+    warningMsg = document.querySelector('.warning')
 
     socket.on('colorAssignment', colorIndex => {
       const terminalColor = controller.getColor(colorIndex)
@@ -73,8 +73,9 @@ function app(p){
     })
 
     socket.on('removeInputfield', warning => {
+      dollar.remove()
       terminal.remove()
-      warning.textContent = warning
+      warningMsg.textContent = warning
     })
 
     addKeyPressListener(socket,room,controller.onEnter)
