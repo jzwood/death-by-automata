@@ -33,7 +33,6 @@ function newAnimator(size, p5){
   let state = []
   const colors = ['#000000','#ff00ff','#00ffff','#00ff00','#ffff00','#ff0000']
   let gridSize = 0, side = 0
-  // console.assert(size%gridSize === 0)
 
   return {
     draw(){

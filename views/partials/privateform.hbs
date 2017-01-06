@@ -1,12 +1,18 @@
-<form action="/private" method="post">
-  <input type="text" name="room" placeholder="$private_room_key" class="btn btn--input" autocomplete="off"></input><br>
-  <input type="submit" name="name" value="cd ./$private_room_key" class="btn btn--submit btn--hide">
+<form action="/private" method="post" class="form">
+  <input type="text" name="room" placeholder="$private_key" class="btn form--input" autocomplete="off"></input>
+  <br/>
+  <input type="submit" name="name" value="cd ./e($private_key)" class="btn form--submit form--hide" disabled>
 </form>
-
 <script type="text/javascript">
-  var input = document.querySelector('.btn--input'),
-  output = document.querySelector('.btn--submit')
+  var input = document.querySelector('.form--input'),
+  output = document.querySelector('.form--submit')
   input.addEventListener('input', function(e) {
-    input.value.trim() ? output.classList.remove('btn--hide') : output.classList.add('btn--hide')
+    input.value.trim() ? (
+      output.classList.remove('form--hide'),
+      output.disabled = false
+    ): (
+      output.classList.add('form--hide'),
+      output.disabled = true
+    )
   })
 </script>

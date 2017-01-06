@@ -16,13 +16,13 @@
     You win when your automata occupies at least 80% of the board.
 
     THE CATCH
-    If any 2 different colored automata collide, every cell connected to the collection by association dies.
+    If any 2 different colored automata collide every cell connected to the collision by association dies.
 
     DESCRIPTION
-    The only way to interact with your automata is by defining Survival/Birth (S/B) conditions in the CLI.
+    The only way to interact with your automata is by defining Survival/Birth (S/B) conditions in the browser CLI.
 
-    S - consists of a list of numbers, each of which represent how many living neighbors are necessary for a <span class="highlight">living</span> cell to <span class="highlight">survive</span>
-    B - consists of a list of numbers, each of which represent how many living neighbors are necessary for a <span class="highlight">dead</span> cell to be <span class="highlight">born</span>
+    S - consists of a list of numbers, each of which represent how many living neighbors are necessary for a <span class="highlight">living</span> cell to <span class="highlight">survive</span>.
+    B - consists of a list of numbers, each of which represent how many living neighbors are necessary for a <span class="highlight">dead</span> cell to be <span class="highlight">born</span>.
 
     USAGE
     $ /[0-9]*\/[0-9]*/
@@ -42,8 +42,8 @@
 
     If we apply the S/B rule 134/25 to the cell depicted in FIG 1. we see that there are 3 living neighbors.
 
-    we can deduce that if c is living (c=1) then it will survive b/c rule S includes 3.
-    but if c is dead (c=0) then it will stay dead b/c rule B does not include 3.
+    We can deduce that if c is living (c=1) then it will survive b/c rule S includes a 3.
+    However, if c is dead (c=0) then it will stay dead b/c rule B does not include a 3.
 
     FURTHER READING
     Google "Life-like cellular automaton" for more information.
