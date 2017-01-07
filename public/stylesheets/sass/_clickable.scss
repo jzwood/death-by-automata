@@ -2,11 +2,28 @@
 /* Block */
 .nav {
   padding-top: 20px;
+
+  @include e('warning'){
+    padding:0;
+  };
+
   display: block;
   text-align: center;
 
   @include m('black'){
     background-color: #000;
+  }
+}
+
+.form{
+
+  @include m('input'){
+    outline-color: #000;
+  };
+
+  opacity: 1;
+  @include m('hide'){
+    opacity: 0;
   }
 }
 
@@ -26,13 +43,10 @@
   font-size: $medium-font;
   font-family: $code-font;
 
-  &:hover{
+  &:hover:enabled{
     cursor: pointer;
   }
 
-  opacity: 1;
   transition: opacity 1s ease;
-  @include m('hide'){
-    opacity: 0;
-  }
+
 }
