@@ -46,6 +46,8 @@ function app(p){
     p.strokeWeight(1)
     p.strokeCap(p.SQUARE)
 
+    p.background("#000")
+
     p.windowResized = () => {
       p.windowWidth < size + 2 * padding? (
         controller.setSize(p.windowWidth - padding),
@@ -58,8 +60,8 @@ function app(p){
 
     socket.emit('init',room)//tell server you've connected to room
 
-    const terminal = document.querySelector('.wrapper__terminal'),
-    dollar = document.querySelector('.wrapper__dollar'),
+    const terminal = document.querySelector('.terminal__input'),
+    dollar = document.querySelector('.terminal__dollar'),
     warningMsg = document.querySelector('.warning')
 
     socket.on('colorAssignment', colorIndex => {
@@ -83,7 +85,6 @@ function app(p){
 
   //p5 calls draw (animation loop) automatically
   p.draw = () => {
-    p.background("#000")
     controller.animate()
   }
 }

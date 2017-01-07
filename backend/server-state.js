@@ -40,9 +40,9 @@ module.exports = {
       var visited = []
       visited.length = dimSquared
       visited.fill(0)
-      visited = visited.map(function(v,j){
-        return j%dim && (j+1)%dim && j > dim && j < (dimSquared - dim) ? 0 : 1
-      })
+      // visited = visited.map(function(v,j){
+      //   return j%dim && (j+1)%dim && j > dim && j < (dimSquared - dim) ? 0 : 1
+      // })
       for (var i = 0; i < dimSquared; i++) {
         if(boardTemp[i] === 5)
         recursivelyPoison(i,visited)
@@ -53,15 +53,21 @@ module.exports = {
       if(!visited[k]){
         visited[k] = 1
         if(boardTemp[k]){
-          boardTemp[k] = 5
-          recursivelyPoison(getIndex(k,1,-1),visited)
-          recursivelyPoison(getIndex(k,1,0),visited)
-          recursivelyPoison(getIndex(k,1,1),visited)
-          recursivelyPoison(getIndex(k,0,-1),visited)
-          recursivelyPoison(getIndex(k,0,1),visited)
-          recursivelyPoison(getIndex(k,-1,-1),visited)
-          recursivelyPoison(getIndex(k,-1,0),visited)
-          recursivelyPoison(getIndex(k,-1,1),visited)
+          boardTemp[k] = 5 //set non-black tile red
+          //survey neighbors
+          const N = isInBoard(k,0,1), E = isInBoard(k,1,0),
+          S = isInBoard(k,0,-1), W = isInBoard(k,-1,0)
+
+          //recursively poison legal neighbors
+          if(N && E) recursivelyPoison(getIndex(k,1,1),visited)
+          if(N && W) recursivelyPoison(getIndex(k,-1,1),visited)
+          if(S && E) recursivelyPoison(getIndex(k,1,-1),visited)
+          if(S && W) recursivelyPoison(getIndex(k,-1,-1),visited)
+
+          if(N) recursivelyPoison(getIndex(k,0,1),visited)
+          if(E) recursivelyPoison(getIndex(k,1,0),visited)
+          if(S) recursivelyPoison(getIndex(k,0,-1),visited)
+          if(W) recursivelyPoison(getIndex(k,-1,0),visited)
         }
       }return false
     }
