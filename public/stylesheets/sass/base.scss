@@ -12,6 +12,55 @@
   color: #fff;
 }
 
+.flags{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10px;
+
+  @include e('flag'){
+    // width: 24%;
+    flex-grow: 1;
+    display: inline-block;
+    text-align: center;
+    font-family: $code-font;
+  }
+  @include m('color1'){
+    color: #ff00ff;
+  };
+  @include m('color2'){
+    color: #00ffff;
+  };
+  @include m('color3'){
+    color: #00ff00;
+  };
+  @include m('color4'){
+    color: #ffff00;
+  };
+}
+
+.terminal{
+
+  padding-top: 10px;
+
+  @include e('dollar'){
+    color: #fff;
+    background-color: #000;
+    font-family: $code-font;
+    font-size: $medium-font;
+    padding-right: 2px;
+  }
+
+  @include e('input'){
+    border: 0;
+    outline: 0;
+    font-family: $code-font;
+    font-size: $medium-font;
+    color: #fff;
+    background-color: #000;
+  }
+}
+
 .wrapper {
   width: 100%;
   min-height: 100vh;
@@ -42,27 +91,10 @@
     white-space: pre-line;
   }
 
-  @include e('dollar'){
-    color: #fff;
-    background-color: #000;
-    font-family: $code-font;
-    font-size: $medium-font;
-    padding-right: 2px;
-  }
-
-  @include e('terminal'){
-    border: 0;
-    outline: 0;
-    font-family: $code-font;
-    font-size: $medium-font;
-    color: #fff;
-    background-color: #000;
-  }
-
   @include e('canvas') {
 
     display: block;
-    margin: 20px;
+    margin: 0 20px;
     background-color: inherit;
 
     @include e('p5'){
