@@ -96,6 +96,7 @@ function newUser(){
   return {
     readInput(){
       rules.push(parseRules(terminal.value))
+      terminal.value = ''
     },
     getRule(){
       let rule = rules.slice(-1).toString()

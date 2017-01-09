@@ -46,18 +46,25 @@
   @include e('dollar'){
     color: #fff;
     background-color: #000;
+    padding-right: 2px;
     font-family: $code-font;
     font-size: $medium-font;
-    padding-right: 2px;
   }
 
   @include e('input'){
     border: 0;
     outline: 0;
-    font-family: $code-font;
-    font-size: $medium-font;
     color: #fff;
     background-color: #000;
+    font-family: $code-font;
+    font-size: $medium-font;
+  }
+
+  @include e('info'){
+    color: white;
+    padding-top:10px;
+    font-family: $code-font;
+    font-size: $medium-font;
   }
 }
 
