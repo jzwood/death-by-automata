@@ -10,7 +10,7 @@
   </style>
   <p class="wrapper__p">
     NAME
-    automata - a multiplayer game where cellular automata compete for supremacy.
+    automata - a multiplayer game where cellular automata compete for supremacy. Only 1 automata can be controlled from a single URL. To control more than 1 color yourself connect to the board from another tab.
 
     WIN CONDITION
     You win when your automata occupies at least
@@ -22,16 +22,16 @@
     If any 2 different colored automata collide every cell connected to the collision by association dies.
 
     DESCRIPTION
-    The only way to interact with your automata is by defining Survival/Birth (S/B) conditions in the browser CLI.
+    The only way to interact with your automata is by defining Survival/Birth (S/B) conditions in the input field beneath the game grid.
 
     S - consists of a list of numbers, each of which represent how many living neighbors are necessary for a <span class="highlight">living</span> cell to <span class="highlight">survive</span>.
     B - consists of a list of numbers, each of which represent how many living neighbors are necessary for a <span class="highlight">dead</span> cell to be <span class="highlight">born</span>.
 
     USAGE
-    $ /[0-9]*\/[0-9]*/
+    $ /[1-9]*\/[1-9]*/
 
     EXAMPLES
-    $ 0124/14
+    $ 124/14
     $ /123
     $ 1356/
 

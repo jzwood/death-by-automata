@@ -92,7 +92,7 @@ function app(p){
 function addKeyPressListener(s,r,callback){
   const timePerCall = 500
   document.addEventListener('keydown', function(event) {
-    throttle(callback(s,r,event.keyCode),timePerCall)
+    throttle(callback(s,r,event.keyCode), timePerCall)
  }, false)
 }
 
